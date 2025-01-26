@@ -112,6 +112,7 @@ WIP - will update
 
 general idea:
 
+```
 📂 prophetic-emergentomics
  ├── README.md  # Overview of research
  ├── papers/  # Research drafts, whitepapers
@@ -125,6 +126,7 @@ general idea:
  ├── data/  # Alternative economic indicators, synthetic data
  ├── experiments/  # Research experiments
  ├── blog/  # Posts and essays for public discussion
+```
 
 ## Working Paper
 
