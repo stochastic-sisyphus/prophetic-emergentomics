@@ -111,16 +111,20 @@ graph TD
 WIP - will update
 
 general idea:
-```
+
 📂 prophetic-emergentomics
  ├── README.md  # Overview of research
  ├── papers/  # Research drafts, whitepapers
  ├── theory/  # Notes on emergent behavior, forecasting failures
- ├── models/  # AI-driven economic simulations
- ├── data/  # Alternative economic indicators
+ ├── models/
+ │   ├── generative/  # GANs, VAEs for scenario generation
+ │   ├── reinforcement/  # Reinforcement learning frameworks
+ │   ├── graph-neural/  # GNN implementations
+ │   ├── unsupervised/  # Clustering, anomaly detection scripts
+ │   └── hybrid-complexity/  # Integrated complexity-ML models
+ ├── data/  # Alternative economic indicators, synthetic data
  ├── experiments/  # Research experiments
  ├── blog/  # Posts and essays for public discussion
-```
 
 ## Working Paper
 
