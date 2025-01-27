@@ -4,6 +4,9 @@
 
 > Beyond Prediction—Frameworks for Economic Evolution
 
+**WORKING PAPER**
+Look out for updates as I add preliminary research, articles, pre-print, paper (working on it!), and code. 
+
 ## Overview
 
 **The Prophecy of the Emergent Economy** is a research initiative that explores how economic systems are transforming in an era of accelerating technological, social, and systemic shifts. Traditional economic forecasting methods rely on historical data and linear models and are increasingly inadequate. Moore’s Law, AI, and technological acceleration are driving changes at an unprecedented rate, rendering past trends ineffective for predicting future economic states. This project investigates how to develop **new models of economic foresight that account for exponential technological change, emergent behaviors, and self-organizing dynamics.**
