@@ -41,7 +41,9 @@ Look out for updates as I add preliminary research, articles, pre-print, paper (
 
 ## Research & Background
 
-### Conceptual Foundations
+### Conceptual Terms in Development 
+<sub>(Programmers Enjoy Creative Outlets Too)</sub>
+<sub>(and not just when naming functions)</sub>
 
 - **Emergentomics**: Understanding how economies evolve through self-organizing, non-linear interactions rather than centralized planning or traditional economic theories.
 - **Complexity Economics**: Moving beyond equilibrium-based models to study economic systems as evolving, interdependent networks.
