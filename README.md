@@ -5,13 +5,17 @@
 > Beyond Prediction—Frameworks for Economic Evolution
 
 **WORKING PAPER**
-Look out for updates as I add preliminary research, articles, pre-print, paper (working on it!), and code. 
+Look out for updates as I add preliminary research, articles, pre-print, paper (in progress!), and code. 
+
+The pace of technological change makes stasis unrealistic, and this repo will unfold in tandem.
+
+**_This will evolve, or it will expire._**
 
 ## Overview
 
 **The Prophecy of the Emergent Economy** is a research initiative that explores how economic systems are transforming in an era of accelerating technological, social, and systemic shifts. Traditional economic forecasting methods rely on historical data and linear models and are increasingly inadequate. Moore’s Law, AI, and technological acceleration are driving changes at an unprecedented rate, rendering past trends ineffective for predicting future economic states. This project investigates how to develop **new models of economic foresight that account for exponential technological change, emergent behaviors, and self-organizing dynamics.**
 
-**What can economic forecasting learn from machine learning? Should we be learning from machine learning?**
+**What can economic forecasting learn from machine learning? Should _we_ be learning from machine learning?**
 
 ## Motivation & Research Gap
 
@@ -22,6 +26,8 @@ Economic forecasting is fundamentally misaligned with the systems it attempts to
 This project is grounded in the idea that most economic paradigms in use today are unable to account for rapid non-linear change. AI-driven automation, decentralized systems, and complex global interdependencies are not anomalies—they are the new structure of the economy. Yet current forecasting methods largely ignore emergent behavior, treating it as noise rather than signal.
 
 The goal is to explore the construction of **post-linear economic foresight**: approaches that simulate evolution, learn from real-time signals, and integrate uncertainty as structure, not error. By combining techniques from machine learning, complexity theory, and systems modeling, the aim is to develop adaptive foresight frameworks that operate beyond traditional forecasting's epistemic constraints.
+
+Forecasting’s not broken. It’s outdated—and arguably misapplied in this context, especially at this scale. At the very least, it’s ill-suited to systems evolving faster than it can interpret. This research explores adaptive, ML- and complexity-driven frameworks for modeling economic evolution in an era of acceleration, emergence, and uncertainty.
 
 ## Epistemological Premises
 
@@ -234,7 +240,9 @@ graph TD
 
 ### Abstract
 
-The current draft of this paper examines the limitations of historical data-driven forecasting in an era marked by exponential technological progress and systemic transformations. It explores the roles of emergence, complexity, and self-organizing behaviors in shaping economic systems. The study introduces advanced machine learning and deep learning methodologies that transcend traditional predictive models, offering new frameworks for economic foresight that accommodate uncertainty, non-linearity, and adaptive dynamics without relying on synthetic data. This is subject to change, I can't possibly point out the rate at which technology advances, and stand on my view that we must *attempt* to keep up (or at least not get more than a decade behind) without *trying* to update my research, experiments, and code accordingly.
+The current draft of this paper examines the limitations of historical data-driven forecasting in an era marked by exponential technological progress and systemic transformations. It explores the roles of emergence, complexity, and self-organizing behaviors in shaping economic systems. The study introduces advanced machine learning and deep learning methodologies that transcend traditional predictive models, offering new frameworks for economic foresight that accommodate uncertainty, non-linearity, and adaptive dynamics—without relying on synthetic data.
+
+This is subject to change. I can’t reasonably fix the rate at which technology evolves, and despite my fondness for conceptual terms like prophetic economics, I cannot timestamp the future, nor pretend this will age gracefully without revision.
 
 ### Key Sections
 
@@ -272,6 +280,7 @@ The current draft of this paper examines the limitations of historical data-driv
    - Implications for economic forecasting
 
 ## Ongoing Research & Thoughts 
+
 #### Some call it *Thought Leadership,* but Maybe it's Maybelline
 
 ### Subjects Currently Probing
