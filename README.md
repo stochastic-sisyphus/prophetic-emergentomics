@@ -27,7 +27,9 @@ This project is grounded in the idea that most economic paradigms in use today a
 
 The goal is to explore the construction of **post-linear economic foresight**: approaches that simulate evolution, learn from real-time signals, and integrate uncertainty as structure, not error. By combining techniques from machine learning, complexity theory, and systems modeling, the aim is to develop adaptive foresight frameworks that operate beyond traditional forecasting's epistemic constraints.
 
-Forecasting’s not broken. It’s outdated—and arguably misapplied in this context, especially at this scale. At the very least, it’s ill-suited to systems evolving faster than it can interpret. This research explores adaptive, ML- and complexity-driven frameworks for modeling economic evolution in an era of acceleration, emergence, and uncertainty.
+Forecasting’s not broken. It’s outdated—and arguably misapplied in this context, especially at this scale. It is structurally misapplied: an attempt to parse emergence using tools built for equilibrium. At the very least, it’s ill-suited to systems evolving faster than it can interpret.
+
+This research explores adaptive, ML- and complexity-driven frameworks for modeling economic evolution in an era of acceleration, emergence, and uncertainty.
 
 ## Epistemological Premises
 
@@ -66,8 +68,6 @@ To do this, we leverage tools that mirror the properties of the systems we study
 - **Hybrid Complexity Models** blend rule-based, agent-driven simulation with machine-learned emergent behaviors.
 
 This isn’t just a methodological toolkit—it’s a philosophical stance: that foresight in complex systems must be iterative, non-deterministic, and sensitive to emergence.
-
-If you’re working on adjacent problems or share these questions—or if you too feel existential—I’d be glad to connect.
 
 ## Core Research Questions
 
@@ -337,6 +337,7 @@ This is not a closed framework—it’s an iterative, epistemologically experime
 ## Collaboration
 
 We welcome collaborations, discussions, and contributions from researchers, economists, machine learning practitioners, AI specialists, and complexity theorists. If you’re interested in contributing, exploring potential partnerships, or applying machine learning techniques to economic forecasting, reach out or check the **issues** section for open discussions. 
+If you’re working on adjacent problems or share these questions—or if you too feel existential—I’d be glad to connect.
 
 
 ## Final Note
@@ -345,7 +346,7 @@ This project doesn’t aim to solve the forecasting problem. It questions whethe
 
 It’s an attempt to trace the outlines of systems in motion—systems that defy reduction, resist projection, and evolve faster than our models can capture. It leans into uncertainty not as failure, but as structure. The goal isn’t prediction. It’s orientation.
 
-If this feels familiar—if you've noticed the cracks forming between metrics and meaning, between institutional models and lived complexity, or if you've recently gotten into absurdism or reading existential literature—you’re not alone. This repository is a scaffolding, a starting point. Not a destination.
+Maybe you've noticed the cracks forming between metrics and meaning too, between institutional models and lived complexity; maybe you've recently gotten into absurdism or reading existential literature....
 
 The work is unfinished. It has to be.
 
