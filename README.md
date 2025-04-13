@@ -252,7 +252,7 @@ This paper examines the limitations of historical data-driven forecasting in an 
 
 We welcome collaborations, discussions, and contributions from researchers, economists, machine learning practitioners, AI specialists, and complexity theorists. If you’re interested in contributing, exploring potential partnerships, or applying machine learning techniques to economic forecasting, reach out or check the **issues** section for open discussions.
 
-## Resources & Further Reading
+## Further Reading
 
 - [Science, Technology, and Innovation | OECD](https://www.oecd.org/en/topics/science-technology-and-innovation.html)
 
