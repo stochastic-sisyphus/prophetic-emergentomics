@@ -323,11 +323,11 @@ This repository is structured as both a conceptual framework and a functional pi
 - **/theory/** – Exploratory writing and notes on emergent behavior, breakdowns in traditional forecasting, and philosophical questions of epistemology and ontology
 - **/blog/** – Public-facing commentary, technical breakdowns, provocations, and evolving thoughts
 
-This is not a closed framework—it’s an iterative, epistemologically experimental system. Contributions are welcome, especially from those working across complexity science, economic modeling, ML research, or structural epistemology.
+This is not a closed framework—it’s an iterative, epistemologically experimental system. 
 
 ## Collaboration
 
-We welcome collaborations, discussions, and contributions from researchers, economists, machine learning practitioners, AI specialists, and complexity theorists. If you’re interested in contributing, exploring potential partnerships, or applying machine learning techniques to economic forecasting, reach out or check the **issues** section for open discussions.
+We welcome collaborations, discussions, and contributions from researchers, economists, machine learning practitioners, AI specialists, and complexity theorists. If you’re interested in contributing, exploring potential partnerships, or applying machine learning techniques to economic forecasting, reach out or check the **issues** section for open discussions. 
 
 
 ## Final Note
@@ -336,7 +336,7 @@ This project doesn’t aim to solve the forecasting problem. It questions whethe
 
 It’s an attempt to trace the outlines of systems in motion—systems that defy reduction, resist projection, and evolve faster than our models can capture. It leans into uncertainty not as failure, but as structure. The goal isn’t prediction. It’s orientation.
 
-If this feels familiar—if you've noticed the cracks forming between metrics and meaning, between institutional models and lived complexity—you’re not alone. This repository is a scaffolding, a starting point. Not a destination.
+If this feels familiar—if you've noticed the cracks forming between metrics and meaning, between institutional models and lived complexity, or if you've recently gotten into absurdism or reading existential literature—you’re not alone. This repository is a scaffolding, a starting point. Not a destination.
 
 The work is unfinished. It has to be.
 
