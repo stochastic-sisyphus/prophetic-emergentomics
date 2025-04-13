@@ -271,7 +271,8 @@ The current draft of this paper examines the limitations of historical data-driv
    - Summary of findings
    - Implications for economic forecasting
 
-## Ongoing Research & Thought Leadership
+## Ongoing Research & Thoughts 
+#### Some call it *Thought Leadership,* but Maybe it's Maybelline
 
 ### Subjects Currently Probing
 
