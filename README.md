@@ -301,7 +301,8 @@ _Programmers enjoy creative outlets too (and not just when naming functions)._
 - **Complexity Economics**: Moving beyond equilibrium-based models to study economic systems as evolving, interdependent networks.
 - **Narrative Economics**: How collective beliefs, information flow, and economic storytelling influence market behaviors and financial cycles.
 - **Prophetic Economics**: The necessity of a new form of economic foresight—one that recognizes the limitations of historical data and embraces emergent, self-reinforcing economic phenomena.
-I'm not Merriam Webster, so these are subject to change, but it's just a draft anyway.
+
+*I'm not Merriam Webster, so these are subject to change, but it's just a draft anyway.*
 
 ## Implementation Plan (Research & Code)
 
