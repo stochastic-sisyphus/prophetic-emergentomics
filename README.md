@@ -294,6 +294,7 @@ I am building this repository as both a **research lab notebook** and a **concep
 ## Conceptual Lexicon
 
 These terms are under development and may evolve as the work deepens.
+
 _Programmers enjoy creative outlets too (and not just when naming functions)._
 
 - **Emergentomics**: Understanding how economies evolve through self-organizing, non-linear interactions rather than centralized planning or traditional economic theories.
