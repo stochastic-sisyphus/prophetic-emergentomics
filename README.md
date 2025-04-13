@@ -294,8 +294,7 @@ I am building this repository as both a **research lab notebook** and a **concep
 ## Conceptual Lexicon
 
 These terms are under development and may evolve as the work deepens.
-<sub>(Programmers Enjoy Creative Outlets Too)</sub>
-<sub>(and not just when naming functions)</sub>
+_Programmers enjoy creative outlets too (and not just when naming functions)._
 
 - **Emergentomics**: Understanding how economies evolve through self-organizing, non-linear interactions rather than centralized planning or traditional economic theories.
 - **Complexity Economics**: Moving beyond equilibrium-based models to study economic systems as evolving, interdependent networks.
