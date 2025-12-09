@@ -1,0 +1,144 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "prophetic-emergentomics"
+version = "0.1.0"
+description = "Event-Driven Economic Intelligence Platform: CAG + GDELT for Emergent Economic Analysis"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Vanessa Beck", email = "stochastic-sisyphus@users.noreply.github.com"}
+]
+keywords = [
+    "economics",
+    "emergence",
+    "complexity",
+    "forecasting",
+    "GDELT",
+    "CAG",
+    "context-augmented-generation",
+    "economic-intelligence",
+    "real-time-analytics",
+    "LLM"
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Office/Business :: Financial :: Investment",
+]
+requires-python = ">=3.10"
+dependencies = [
+    # Core data processing
+    "pandas>=2.0.0",
+    "numpy>=1.24.0",
+    "polars>=0.20.0",
+
+    # HTTP and API clients
+    "httpx>=0.25.0",
+    "aiohttp>=3.9.0",
+    "requests>=2.31.0",
+
+    # LLM integration
+    "anthropic>=0.18.0",
+    "openai>=1.12.0",
+    "litellm>=1.20.0",
+
+    # Data storage and caching
+    "diskcache>=5.6.0",
+    "sqlalchemy>=2.0.0",
+    "duckdb>=0.10.0",
+
+    # Async utilities
+    "asyncio-throttle>=1.0.0",
+
+    # Configuration and validation
+    "pydantic>=2.5.0",
+    "pydantic-settings>=2.1.0",
+    "python-dotenv>=1.0.0",
+
+    # Date/time handling
+    "python-dateutil>=2.8.0",
+    "pytz>=2024.1",
+
+    # Network analysis
+    "networkx>=3.2.0",
+
+    # Text processing
+    "beautifulsoup4>=4.12.0",
+    "html5lib>=1.1",
+
+    # Visualization (optional but useful)
+    "plotly>=5.18.0",
+
+    # Logging and monitoring
+    "structlog>=24.1.0",
+    "rich>=13.7.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-cov>=4.1.0",
+    "black>=24.1.0",
+    "ruff>=0.2.0",
+    "mypy>=1.8.0",
+    "pre-commit>=3.6.0",
+]
+ml = [
+    "scikit-learn>=1.4.0",
+    "torch>=2.2.0",
+    "transformers>=4.37.0",
+    "sentence-transformers>=2.3.0",
+]
+notebooks = [
+    "jupyter>=1.0.0",
+    "ipywidgets>=8.1.0",
+    "matplotlib>=3.8.0",
+    "seaborn>=0.13.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/stochastic-sisyphus/prophetic-emergentomics"
+Repository = "https://github.com/stochastic-sisyphus/prophetic-emergentomics"
+Issues = "https://github.com/stochastic-sisyphus/prophetic-emergentomics/issues"
+
+[project.scripts]
+emergentomics = "emergentomics.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-dir]
+"" = "src"
+
+[tool.black]
+line-length = 100
+target-version = ["py310", "py311", "py312"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "C4"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+addopts = "-v --cov=emergentomics --cov-report=term-missing"
