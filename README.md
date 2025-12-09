@@ -1,8 +1,65 @@
 # The Prophecy of the Emergent Economy: Beyond Prediction—Frameworks for Economic Evolution
+
+<div align="center">
+
+### 🔮 [**View Interactive Dashboard →**](https://stochastic-sisyphus.github.io/prophetic-emergentomics/)
+
+*Experience the economic intelligence platform in action*
+
 ---
+
+[![CAG + GDELT](https://img.shields.io/badge/CAG-GDELT%20Integration-6366f1?style=for-the-badge)](https://stochastic-sisyphus.github.io/prophetic-emergentomics/)
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10+-3776ab?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
+
+</div>
+
+---
+
 # The Prophecy of the Emergent Economy
 
 > Beyond Prediction—Frameworks for Economic Evolution
+
+> *"Traditional econometrics give us the skeleton; LLMs add the nervous system. GDP says growth while people feel recession — we bridge that gap."*
+
+## 🚀 Event-Driven Economic Intelligence Platform
+
+This repository now includes a fully implemented **Context Augmented Generation (CAG) framework** enhanced with **GDELT real-time intelligence integration**. The platform transforms theoretical economic frameworks into actionable intelligence.
+
+### Quick Start
+
+```bash
+# Install
+pip install -e .
+
+# Configure (add your API key)
+cp .env.example .env
+
+# Run analysis
+emergentomics analyze "US labor market emerging trends"
+emergentomics briefing
+```
+
+### Key Capabilities
+
+| Feature | Description |
+|---------|-------------|
+| **CAG Framework** | Synthesizes theoretical predictions with real-world events |
+| **GDELT Integration** | Real-time monitoring of 100,000+ global news sources |
+| **Emergence Detection** | 8 signal types: phase transitions, narrative shifts, sentiment divergence |
+| **Opportunity Detection** | Pre-market opportunity identification |
+| **Gap Analysis** | Explains why statistics diverge from lived economic reality |
+
+### Architecture
+
+```
+Bronze Layer → Silver Layer → Gold Layer
+     ↓              ↓              ↓
+ Raw Data     Context Build    LLM Synthesis
+ (GDELT)      (Enrichment)     (Intelligence)
+```
+
+---
 
 **WORKING PAPER**
 Look out for updates as I add preliminary research, articles, pre-print, paper (in progress!), and code. 
