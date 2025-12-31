@@ -1,23 +1,59 @@
 """
 Core data models for Prophetic Emergentomics.
 
-These models represent the fundamental data structures flowing through
-the CAG + GDELT economic intelligence pipeline.
+Data structures for ML/DL-driven emergence detection in complex economic systems.
+GDELT provides behavioral data; ML/DL models detect emergence patterns.
 """
 
 from datetime import datetime
 from enum import Enum
 from typing import Any, Optional
 
+import numpy as np
 from pydantic import BaseModel, Field
 
 
-class MedallionLayer(str, Enum):
-    """Data quality layers in the medallion architecture."""
+# =============================================================================
+# Enumerations
+# =============================================================================
 
-    BRONZE = "bronze"  # Raw, unprocessed data
-    SILVER = "silver"  # Cleaned, consolidated, enriched
-    GOLD = "gold"  # Analytics-ready, LLM-synthesized
+
+class EmergenceType(str, Enum):
+    """Types of economic emergence signals detected by ML models."""
+
+    PHASE_TRANSITION = "phase_transition"
+    TREND_ACCELERATION = "trend_acceleration"
+    CLUSTER_FORMATION = "cluster_formation"
+    ANOMALY_CASCADE = "anomaly_cascade"
+    NETWORK_RESTRUCTURING = "network_restructuring"
+    SENTIMENT_DIVERGENCE = "sentiment_divergence"
+    CONTAGION_PATTERN = "contagion_pattern"
+    ADAPTATION_SIGNAL = "adaptation_signal"
+
+
+class DataSourceType(str, Enum):
+    """Types of data sources."""
+
+    GDELT = "gdelt"  # Global event/sentiment from news
+    SEARCH_TRENDS = "search_trends"
+    JOB_POSTINGS = "job_postings"
+    CONSUMER_SENTIMENT = "consumer_sentiment"
+    MARKET_DATA = "market_data"
+    SOCIAL_DISCUSSION = "social_discussion"
+    FILING_RECORDS = "filing_records"
+
+
+class ModelType(str, Enum):
+    """ML/DL model types."""
+
+    GNN = "graph_neural_network"
+    AUTOENCODER = "autoencoder"
+    CLUSTERING = "clustering"
+    ANOMALY_DETECTION = "anomaly_detection"
+    TIME_SERIES = "time_series"
+    REINFORCEMENT = "reinforcement_learning"
+    TRANSFER = "transfer_learning"
+    ENSEMBLE = "ensemble"
 
 
 class SentimentPolarity(str, Enum):
@@ -30,29 +66,9 @@ class SentimentPolarity(str, Enum):
     VERY_POSITIVE = "very_positive"
 
 
-class EmergenceType(str, Enum):
-    """Types of economic emergence signals."""
-
-    PHASE_TRANSITION = "phase_transition"
-    TREND_ACCELERATION = "trend_acceleration"
-    NARRATIVE_SHIFT = "narrative_shift"
-    POLICY_SIGNAL = "policy_signal"
-    SENTIMENT_DIVERGENCE = "sentiment_divergence"
-    GEOGRAPHIC_CLUSTERING = "geographic_clustering"
-    SECTOR_CONTAGION = "sector_contagion"
-    TECHNOLOGY_ADOPTION = "technology_adoption"
-
-
-class OpportunityType(str, Enum):
-    """Types of economic opportunities detected."""
-
-    MARKET_TIMING = "market_timing"
-    SECTOR_ROTATION = "sector_rotation"
-    POLICY_ARBITRAGE = "policy_arbitrage"
-    NARRATIVE_MOMENTUM = "narrative_momentum"
-    GEOGRAPHIC_ADVANTAGE = "geographic_advantage"
-    TECHNOLOGY_WAVE = "technology_wave"
-    SENTIMENT_REVERSAL = "sentiment_reversal"
+# =============================================================================
+# GDELT Data Models (Behavioral Data Layer)
+# =============================================================================
 
 
 class GeoLocation(BaseModel):
@@ -60,40 +76,31 @@ class GeoLocation(BaseModel):
 
     country_code: Optional[str] = None
     country_name: Optional[str] = None
-    adm1_code: Optional[str] = None  # State/Province
+    adm1_code: Optional[str] = None
     adm1_name: Optional[str] = None
     city: Optional[str] = None
     latitude: Optional[float] = None
     longitude: Optional[float] = None
-    geo_precision: Optional[int] = None  # 1=country, 2=state, 3=city, 4=landmark
 
 
 class Actor(BaseModel):
     """Actor in an economic event."""
 
     name: Optional[str] = None
-    actor_type: Optional[str] = None  # GOV, BUS, NGO, etc.
+    actor_type: Optional[str] = None
     country_code: Optional[str] = None
-    known_group: Optional[str] = None
-    ethnic: Optional[str] = None
-    religion: Optional[str] = None
 
 
-class EconomicEvent(BaseModel):
-    """
-    An economic event extracted from GDELT or other sources.
+class GDELTEvent(BaseModel):
+    """An event from GDELT - behavioral trace of global information flow."""
 
-    Represents the "who did what to whom, when, where" of economic activity.
-    """
-
-    id: str = Field(..., description="Unique event identifier")
-    timestamp: datetime = Field(..., description="When the event occurred")
+    id: str
+    timestamp: datetime
     source_url: Optional[str] = None
     source_name: Optional[str] = None
 
     # Event classification
-    event_type: str = Field(..., description="CAMEO event code or category")
-    event_description: Optional[str] = None
+    event_type: str
     themes: list[str] = Field(default_factory=list)
     economic_sector: Optional[str] = None
 
@@ -103,338 +110,310 @@ class EconomicEvent(BaseModel):
 
     # Location
     location: Optional[GeoLocation] = None
-    locations_mentioned: list[GeoLocation] = Field(default_factory=list)
 
-    # Quantitative measures
-    goldstein_scale: Optional[float] = Field(
-        None, description="GDELT Goldstein scale (-10 to +10)"
-    )
-    num_mentions: int = Field(default=1)
-    num_sources: int = Field(default=1)
-    num_articles: int = Field(default=1)
+    # Quantitative measures from GDELT
+    goldstein_scale: Optional[float] = None  # -10 to +10
+    num_mentions: int = 1
+    num_sources: int = 1
+    num_articles: int = 1
 
     # Tone analysis
     tone: Optional[float] = None
     positive_score: Optional[float] = None
     negative_score: Optional[float] = None
-    polarity: Optional[float] = None
-    activity_reference_density: Optional[float] = None
-    self_group_reference_density: Optional[float] = None
 
-    # Medallion tracking
-    layer: MedallionLayer = MedallionLayer.BRONZE
-    processed_at: Optional[datetime] = None
-
-    # Raw data preservation
+    # Raw preservation
     raw_data: Optional[dict[str, Any]] = None
 
 
-class EconomicSentiment(BaseModel):
-    """
-    Aggregated economic sentiment from news and media analysis.
-
-    Captures the "mood" of economic coverage beyond raw event counts.
-    """
+class GDELTSentiment(BaseModel):
+    """Aggregated sentiment from GDELT - collective mood from news coverage."""
 
     id: str
     timestamp: datetime
-    aggregation_period: str = Field(
-        default="1h", description="Time period for aggregation"
-    )
+    aggregation_period: str = "1h"
 
-    # Geographic scope
-    scope: str = Field(default="global", description="global, country, region, sector")
+    # Scope
+    scope: str = "global"
     country_code: Optional[str] = None
-    region: Optional[str] = None
     sector: Optional[str] = None
 
     # Sentiment metrics
-    overall_tone: float = Field(..., description="Average tone (-100 to +100)")
+    overall_tone: float
     polarity: SentimentPolarity
     confidence: float = Field(default=0.5, ge=0.0, le=1.0)
 
     # Component scores
-    anxiety_score: float = Field(
-        default=0.0, description="Economic anxiety indicator (0-1)"
-    )
-    optimism_score: float = Field(
-        default=0.0, description="Economic optimism indicator (0-1)"
-    )
-    uncertainty_score: float = Field(
-        default=0.0, description="Economic uncertainty indicator (0-1)"
-    )
+    anxiety_score: float = 0.0
+    optimism_score: float = 0.0
+    uncertainty_score: float = 0.0
 
-    # Volume metrics
-    article_count: int = Field(default=0)
-    source_diversity: int = Field(default=0, description="Number of unique sources")
-    language_diversity: int = Field(
-        default=1, description="Number of languages in coverage"
-    )
+    # Volume
+    article_count: int = 0
+    source_diversity: int = 0
 
-    # Trend indicators
-    sentiment_velocity: Optional[float] = Field(
-        None, description="Rate of sentiment change"
-    )
-    sentiment_acceleration: Optional[float] = Field(
-        None, description="Acceleration of sentiment change"
-    )
-
-    # Top themes driving sentiment
+    # Trend
+    sentiment_velocity: Optional[float] = None
     top_themes: list[str] = Field(default_factory=list)
-    top_entities: list[str] = Field(default_factory=list)
-
-    layer: MedallionLayer = MedallionLayer.BRONZE
 
 
-class TheoreticalPrediction(BaseModel):
-    """
-    A prediction from the Prophetic Emergentomics theoretical framework.
-
-    Represents what the theoretical models expect to happen based on
-    emergence theory, complexity economics, and adaptive system dynamics.
-    """
-
-    id: str
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-
-    # Prediction content
-    prediction_type: str = Field(
-        ..., description="phase_transition, trend_shift, policy_impact, etc."
-    )
-    description: str
-    hypothesis: str
-
-    # Theoretical basis
-    theoretical_framework: str = Field(
-        ..., description="emergence, complexity, narrative, adaptive"
-    )
-    supporting_concepts: list[str] = Field(default_factory=list)
-
-    # Quantitative expectations
-    expected_direction: Optional[str] = None  # increase, decrease, volatile, stable
-    expected_magnitude: Optional[str] = None  # minor, moderate, major, transformative
-    expected_timeframe: Optional[str] = None  # immediate, short-term, medium-term, long-term
-
-    # Confidence and conditions
-    confidence: float = Field(default=0.5, ge=0.0, le=1.0)
-    preconditions: list[str] = Field(default_factory=list)
-    invalidation_criteria: list[str] = Field(default_factory=list)
+# =============================================================================
+# ML/DL Data Models
+# =============================================================================
 
 
-class EconomicContext(BaseModel):
-    """
-    The contextual layer for Context Augmented Generation.
+class TimeSeriesPoint(BaseModel):
+    """A single point in an economic time series."""
 
-    Combines theoretical predictions, real-time events, and sentiment
-    to create a rich context for LLM synthesis.
-    """
+    timestamp: datetime
+    value: float
+    source: DataSourceType
+    indicator_name: str
+    confidence: float = Field(default=1.0, ge=0.0, le=1.0)
+
+
+class EconomicTimeSeries(BaseModel):
+    """Time series for ML analysis."""
 
     id: str
+    name: str
+    source: DataSourceType
+    frequency: str = "daily"
+    points: list[TimeSeriesPoint] = Field(default_factory=list)
+
+    # Computed stats
+    mean: Optional[float] = None
+    std: Optional[float] = None
+    trend: Optional[str] = None
+
+    def to_numpy(self) -> np.ndarray:
+        """Convert to numpy array for ML processing."""
+        return np.array([p.value for p in self.points])
+
+
+class EconomicNode(BaseModel):
+    """Node in economic network graph for GNN."""
+
+    id: str
+    node_type: str  # sector, region, indicator, entity
+    name: str
+    features: list[float] = Field(default_factory=list)
+    embedding: Optional[list[float]] = None
+    metadata: dict[str, Any] = Field(default_factory=dict)
+
+
+class EconomicEdge(BaseModel):
+    """Edge in economic network graph."""
+
+    source_id: str
+    target_id: str
+    edge_type: str  # trade, correlation, supply_chain, co_mention
+    weight: float = 1.0
+    features: list[float] = Field(default_factory=list)
+    timestamp: Optional[datetime] = None
+
+
+class EconomicGraph(BaseModel):
+    """Graph for GNN analysis of economic networks."""
+
+    id: str
+    name: str
     created_at: datetime = Field(default_factory=datetime.utcnow)
-    focus_area: str = Field(
-        ..., description="The economic domain or question being analyzed"
-    )
 
-    # Theoretical layer
-    theoretical_predictions: list[TheoreticalPrediction] = Field(default_factory=list)
-    relevant_frameworks: list[str] = Field(default_factory=list)
+    nodes: list[EconomicNode] = Field(default_factory=list)
+    edges: list[EconomicEdge] = Field(default_factory=list)
 
-    # Real-time event layer
-    recent_events: list[EconomicEvent] = Field(default_factory=list)
-    event_clusters: list[dict[str, Any]] = Field(
-        default_factory=list, description="Grouped related events"
-    )
+    # Graph metrics
+    density: Optional[float] = None
+    clustering_coefficient: Optional[float] = None
 
-    # Sentiment layer
-    sentiment_snapshot: Optional[EconomicSentiment] = None
-    sentiment_trajectory: list[EconomicSentiment] = Field(default_factory=list)
+    def to_adjacency_dict(self) -> dict[str, list[str]]:
+        """Convert to adjacency list."""
+        adj = {node.id: [] for node in self.nodes}
+        for edge in self.edges:
+            if edge.source_id in adj:
+                adj[edge.source_id].append(edge.target_id)
+        return adj
 
-    # Statistical layer
-    statistical_indicators: dict[str, float] = Field(default_factory=dict)
-    indicator_trends: dict[str, str] = Field(
-        default_factory=dict, description="Trend direction for each indicator"
-    )
 
-    # Narrative layer
-    dominant_narratives: list[str] = Field(default_factory=list)
-    emerging_narratives: list[str] = Field(default_factory=list)
-    narrative_conflicts: list[str] = Field(
-        default_factory=list, description="Competing/contradictory narratives"
-    )
+# =============================================================================
+# Detection Results
+# =============================================================================
 
-    # Geographic layer
-    geographic_hotspots: list[GeoLocation] = Field(default_factory=list)
-    geographic_correlations: list[dict[str, Any]] = Field(default_factory=list)
 
-    # Context quality metrics
-    data_freshness_hours: float = Field(default=24.0)
-    source_diversity_score: float = Field(default=0.5)
-    context_completeness: float = Field(
-        default=0.5, description="How complete the context is (0-1)"
-    )
+class AnomalyScore(BaseModel):
+    """Anomaly detection result."""
 
-    layer: MedallionLayer = MedallionLayer.SILVER
+    timestamp: datetime
+    score: float = Field(..., ge=0.0, le=1.0)
+    method: str
+    feature_contributions: dict[str, float] = Field(default_factory=dict)
+    is_anomaly: bool = False
+    anomaly_type: Optional[str] = None
+
+
+class ClusterAssignment(BaseModel):
+    """Cluster assignment from unsupervised learning."""
+
+    point_id: str
+    cluster_id: int
+    membership_score: float = 1.0
+    distance_to_centroid: Optional[float] = None
+
+
+class ClusteringResult(BaseModel):
+    """Clustering analysis result."""
+
+    id: str
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    method: str
+
+    n_clusters: int
+    assignments: list[ClusterAssignment] = Field(default_factory=list)
+
+    # Quality metrics
+    silhouette_score: Optional[float] = None
+    centroids: list[list[float]] = Field(default_factory=list)
+    cluster_sizes: list[int] = Field(default_factory=list)
+
+
+class DimensionalityReduction(BaseModel):
+    """Dimensionality reduction result (t-SNE, UMAP, PCA)."""
+
+    id: str
+    method: str
+    original_dims: int
+    reduced_dims: int
+
+    coordinates: list[list[float]] = Field(default_factory=list)
+    point_ids: list[str] = Field(default_factory=list)
+    explained_variance: Optional[float] = None
+
+
+# =============================================================================
+# Emergence Signals
+# =============================================================================
 
 
 class EmergenceSignal(BaseModel):
-    """
-    A detected signal of economic emergence.
-
-    These are the early warnings of phase transitions, trend shifts,
-    and systemic changes that traditional forecasting misses.
-    """
+    """Computationally detected emergence signal."""
 
     id: str
     detected_at: datetime = Field(default_factory=datetime.utcnow)
 
-    # Signal classification
+    # Classification
     emergence_type: EmergenceType
     description: str
-    hypothesis: str = Field(
-        ..., description="What this signal might indicate about economic evolution"
-    )
 
-    # Strength and confidence
-    signal_strength: float = Field(
-        ..., ge=0.0, le=1.0, description="How strong the signal is"
-    )
-    confidence: float = Field(
-        ..., ge=0.0, le=1.0, description="Confidence in the detection"
-    )
-    novelty_score: float = Field(
-        default=0.5, description="How novel/unprecedented this pattern is"
-    )
+    # Detection method
+    detection_method: ModelType
+    model_name: str
+
+    # Strength
+    signal_strength: float = Field(..., ge=0.0, le=1.0)
+    confidence: float = Field(..., ge=0.0, le=1.0)
+    novelty_score: float = Field(default=0.5, ge=0.0, le=1.0)
 
     # Evidence
-    supporting_events: list[str] = Field(
-        default_factory=list, description="Event IDs supporting this signal"
-    )
-    supporting_sentiment: list[str] = Field(
-        default_factory=list, description="Sentiment snapshot IDs"
-    )
-    statistical_anomalies: list[str] = Field(default_factory=list)
+    anomaly_scores: list[AnomalyScore] = Field(default_factory=list)
+    cluster_shifts: Optional[ClusteringResult] = None
+    supporting_events: list[str] = Field(default_factory=list)
 
     # Scope
+    affected_indicators: list[str] = Field(default_factory=list)
+    affected_sectors: list[str] = Field(default_factory=list)
     geographic_scope: Optional[str] = None
-    sector_scope: Optional[str] = None
-    temporal_scope: Optional[str] = None
 
-    # Theoretical alignment
-    aligned_frameworks: list[str] = Field(
-        default_factory=list, description="Which theoretical frameworks predict this"
-    )
-    contradicted_frameworks: list[str] = Field(default_factory=list)
-
-    # Actionability
-    monitoring_recommendations: list[str] = Field(default_factory=list)
-    potential_implications: list[str] = Field(default_factory=list)
-
-    layer: MedallionLayer = MedallionLayer.GOLD
+    # Temporal
+    onset_timestamp: Optional[datetime] = None
+    propagation_speed: Optional[str] = None
 
 
-class EconomicIntelligence(BaseModel):
-    """
-    The final synthesized economic intelligence output.
-
-    This is the Gold layer output: LLM-synthesized insights that bridge
-    statistical metrics with lived economic reality.
-    """
-
-    id: str
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-
-    # Query context
-    query: str = Field(..., description="The question or focus that generated this")
-    analysis_scope: str = Field(default="general")
-
-    # Synthesized narrative
-    executive_summary: str = Field(
-        ..., description="2-3 sentence synthesis of key insights"
-    )
-    detailed_analysis: str = Field(
-        ..., description="Full LLM-generated analysis"
-    )
-
-    # Key findings
-    key_insights: list[str] = Field(default_factory=list)
-    blind_spots_identified: list[str] = Field(
-        default_factory=list, description="What traditional metrics might miss"
-    )
-    narrative_vs_metrics_gap: Optional[str] = Field(
-        None, description="Where lived reality diverges from statistics"
-    )
-
-    # Emergence detection
-    emergence_signals: list[EmergenceSignal] = Field(default_factory=list)
-    phase_transition_risk: float = Field(
-        default=0.0, description="Risk of imminent phase transition"
-    )
-
-    # Forward-looking elements
-    scenarios: list[dict[str, Any]] = Field(
-        default_factory=list, description="Possible future trajectories"
-    )
-    monitoring_triggers: list[str] = Field(
-        default_factory=list, description="What to watch for"
-    )
-    uncertainty_factors: list[str] = Field(default_factory=list)
-
-    # Opportunities
-    opportunities_detected: list[dict[str, Any]] = Field(default_factory=list)
-    strategic_recommendations: list[str] = Field(default_factory=list)
-
-    # Meta information
-    context_used: Optional[str] = Field(None, description="Context ID used")
-    model_used: str = Field(default="unknown")
-    synthesis_confidence: float = Field(default=0.5)
-
-    # Source attribution
-    data_sources: list[str] = Field(default_factory=list)
-    event_count_analyzed: int = Field(default=0)
-    sentiment_snapshots_used: int = Field(default=0)
-
-    layer: MedallionLayer = MedallionLayer.GOLD
-
-
-class OpportunityAlert(BaseModel):
-    """
-    An actionable economic opportunity alert.
-
-    Generated when the system detects potential opportunities before
-    they become obvious to the broader market.
-    """
+class PhaseTransition(BaseModel):
+    """Detected regime change / phase transition."""
 
     id: str
     detected_at: datetime = Field(default_factory=datetime.utcnow)
 
-    # Opportunity classification
-    opportunity_type: OpportunityType
-    title: str
-    description: str
+    from_regime: str
+    to_regime: str
+    transition_type: str  # abrupt, gradual, oscillating
 
-    # Urgency and confidence
-    urgency: str = Field(default="moderate")  # low, moderate, high, critical
+    # Evidence
+    order_parameter: str
+    critical_value: float
+    current_value: float
+
     confidence: float = Field(..., ge=0.0, le=1.0)
-    time_sensitivity: Optional[str] = None
 
-    # Supporting evidence
-    triggering_signals: list[str] = Field(default_factory=list)
-    supporting_events: list[str] = Field(default_factory=list)
-    sentiment_basis: Optional[str] = None
 
-    # Geographic and sector scope
-    geographic_focus: list[str] = Field(default_factory=list)
-    sector_focus: list[str] = Field(default_factory=list)
+# =============================================================================
+# Simulation (RL)
+# =============================================================================
 
-    # Strategic guidance
-    potential_actions: list[str] = Field(default_factory=list)
-    risks_to_consider: list[str] = Field(default_factory=list)
-    competitive_timing: Optional[str] = Field(
-        None, description="How quickly others might recognize this"
-    )
 
-    # Invalidation
-    invalidation_triggers: list[str] = Field(default_factory=list)
-    expiration: Optional[datetime] = None
+class EconomicState(BaseModel):
+    """State for RL environment."""
 
-    layer: MedallionLayer = MedallionLayer.GOLD
+    timestamp: datetime
+    observation: list[float] = Field(default_factory=list)
+    indicator_values: dict[str, float] = Field(default_factory=dict)
+    is_terminal: bool = False
+
+
+class PolicyAction(BaseModel):
+    """Action in RL simulation."""
+
+    action_type: str
+    parameters: dict[str, float] = Field(default_factory=dict)
+    description: str = ""
+
+
+class SimulationStep(BaseModel):
+    """Single RL simulation step."""
+
+    step: int
+    state: EconomicState
+    action: PolicyAction
+    reward: float
+    next_state: EconomicState
+    done: bool
+
+
+# =============================================================================
+# Output Reports
+# =============================================================================
+
+
+class EmergenceReport(BaseModel):
+    """Comprehensive emergence detection report - observable output."""
+
+    id: str
+    generated_at: datetime = Field(default_factory=datetime.utcnow)
+    analysis_period: str
+
+    # GDELT summary
+    gdelt_events_analyzed: int = 0
+    gdelt_sentiment_summary: Optional[GDELTSentiment] = None
+
+    # ML detection results
+    signals_detected: list[EmergenceSignal] = Field(default_factory=list)
+    phase_transitions: list[PhaseTransition] = Field(default_factory=list)
+
+    # Clustering insights
+    regime_clusters: Optional[ClusteringResult] = None
+    dimensionality_reduction: Optional[DimensionalityReduction] = None
+
+    # Network analysis
+    network_metrics: dict[str, float] = Field(default_factory=dict)
+    critical_nodes: list[str] = Field(default_factory=list)
+
+    # Anomalies
+    anomaly_rate: float = 0.0
+    top_anomalies: list[AnomalyScore] = Field(default_factory=list)
+
+    # Metadata
+    models_used: list[str] = Field(default_factory=list)
+    data_sources_used: list[DataSourceType] = Field(default_factory=list)
+    overall_confidence: float = Field(default=0.5, ge=0.0, le=1.0)
+    uncertainty_factors: list[str] = Field(default_factory=list)

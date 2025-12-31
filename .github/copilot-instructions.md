@@ -2,9 +2,9 @@
 
 ## Repository Overview
 
-This repository implements **The Prophecy of the Emergent Economy** — an event-driven economic intelligence platform that combines Context Augmented Generation (CAG) with GDELT real-time global event monitoring. The platform bridges the gap between what economic indicators say and what people actually experience.
+This repository implements **The Prophecy of the Emergent Economy** — an ML/DL-driven emergence detection platform for complex economic systems. GDELT provides behavioral data; ML models detect phase transitions and regime changes.
 
-**Core Philosophy**: Traditional econometrics give us the skeleton; LLMs add the nervous system. GDP says growth while people feel recession — we bridge that gap.
+**Core Philosophy**: Economies behave like ecologies, not machines. We detect emergence, not predict outcomes. Uncertainty is structure, not error.
 
 ## Technical Architecture
 
@@ -13,142 +13,127 @@ This repository implements **The Prophecy of the Emergent Economy** — an event
 ```
 src/emergentomics/
 ├── core/           # Configuration and data models (Pydantic)
-├── cag/            # Context Augmented Generation engine
 ├── gdelt/          # GDELT API integration (async httpx)
-├── synthesis/      # LLM-powered economic synthesis
-├── intelligence/   # Emergence detection algorithms
-├── medallion/      # Bronze → Silver → Gold data pipeline
-├── patterns/       # Pattern discovery modules
+├── detection/      # ML-based emergence detection
+│   ├── anomaly.py     # Isolation forest, statistical anomaly detection
+│   ├── clustering.py  # HDBSCAN, K-means regime identification
+│   └── emergence.py   # Combined emergence detection
 └── cli.py          # Command-line interface
 ```
 
 ### Key Dependencies
+- **ML/DL Core**: `scikit-learn` (anomaly detection, clustering)
 - **Async HTTP**: `httpx`, `aiohttp` for GDELT API calls
-- **LLM Integration**: `anthropic`, `openai`, `litellm`
 - **Data Processing**: `pandas`, `polars`, `numpy`
+- **Network Analysis**: `networkx` for economic graphs
+- **Visualization**: `plotly` for output generation
 - **Validation**: `pydantic`, `pydantic-settings`
-- **Logging**: `structlog`, `rich`
+- **Optional ML**: `torch`, `hdbscan`, `umap-learn`, `torch-geometric`
 
 ## Development Guidelines
 
 ### Code Style
 
-1. **Async-First**: All GDELT and LLM operations use async/await
-2. **Type Hints**: Full type annotations with Pydantic models
+1. **Type Hints**: Full type annotations with Pydantic models
+2. **Async for I/O**: GDELT operations use async/await
 3. **Configuration**: Environment-based settings via `pydantic-settings`
-4. **Error Handling**: Structured exceptions with proper logging
+4. **Observable Output**: All detection results export to JSON for visualization
 
 ### Data Models
 
 Core models in `src/emergentomics/core/models.py`:
-- `EconomicEvent` — GDELT event with economic classification
-- `EconomicSentiment` — Multi-source sentiment aggregation
-- `EconomicContext` — Rich context for CAG synthesis
-- `EmergenceSignal` — Detected emergence patterns (8 types)
-- `EconomicIntelligence` — Gold-layer synthesized intelligence
-- `OpportunityAlert` — Actionable market opportunities
+- `GDELTEvent` — Event from GDELT behavioral data stream
+- `GDELTSentiment` — Aggregated sentiment from news coverage
+- `AnomalyScore` — Anomaly detection result
+- `ClusteringResult` — Regime clustering output
+- `EmergenceSignal` — Detected emergence pattern (8 types)
+- `PhaseTransition` — Detected regime change
+- `EmergenceReport` — Complete analysis output
 
-### Medallion Architecture
-
-Follow the Bronze → Silver → Gold pattern:
+### Data Flow
 
 ```python
-# Bronze: Raw GDELT data
-bronze_events = await gdelt_client.search_economic_events(query)
+# 1. Collect behavioral data from GDELT
+events = await gdelt_client.search_economic_events(query)
 
-# Silver: Enriched with sentiment, themes, classification
-silver_data = await enrichment_pipeline.process(bronze_events)
+# 2. Extract features
+tones = [e.tone for e in events]
+data = np.array(tones)
 
-# Gold: LLM-synthesized intelligence
-gold_intelligence = await cag_engine.synthesize(silver_data)
+# 3. Run ML detection
+detector = EmergenceDetector()
+report = detector.analyze(data, gdelt_events=events)
+
+# 4. Export for Observable visualization
+observable_json = detector.to_observable(report)
 ```
 
 ### Emergence Signal Types
 
 The platform detects 8 emergence signal types:
-1. `phase_transition` — Systemic state changes
-2. `narrative_shift` — Collective belief changes
-3. `sentiment_divergence` — Indicator-reality gaps
-4. `cascade_initiation` — Chain reaction triggers
-5. `complexity_spike` — System complexity increases
-6. `adaptation_pattern` — Behavioral adjustments
-7. `resilience_test` — System stress responses
-8. `emergence_crystallization` — New pattern formation
+1. `phase_transition` — Regime change detected
+2. `trend_acceleration` — Exponential departure from baseline
+3. `cluster_formation` — New grouping in feature space
+4. `anomaly_cascade` — Propagating anomalies across network
+5. `network_restructuring` — Topology shift in economic graph
+6. `sentiment_divergence` — Behavior vs indicators gap
+7. `contagion_pattern` — Cross-sector/region spread
+8. `adaptation_signal` — System adjusting to new equilibrium
 
-### CAG Implementation
+### ML Methods
 
-Context Augmented Generation assembles multi-layer context:
-1. **Theoretical Layer**: Complexity economics frameworks
-2. **Event Layer**: Real-time GDELT events
-3. **Sentiment Layer**: Global sentiment analysis
-4. **Narrative Layer**: Dominant economic narratives
-5. **Statistical Layer**: Traditional indicators
+**Anomaly Detection:**
+- Isolation Forest (sklearn)
+- Statistical Z-score fallback
+- Feature contribution analysis
 
-```python
-context = await context_builder.build_comprehensive_context(
-    query=query,
-    events=events,
-    sentiment=sentiment,
-    frameworks=["emergence_theory", "complexity_economics"]
-)
-intelligence = await cag_engine.synthesize(context)
-```
+**Clustering:**
+- HDBSCAN for density-based regime detection
+- K-means for partitional clustering
+- PCA/UMAP for dimensionality reduction
+
+**Network Analysis (planned):**
+- Graph Neural Networks for economic network structure
+- Centrality metrics for critical node identification
 
 ## Conceptual Vocabulary
 
 - **Emergentomics**: Economic analysis through self-organizing, non-linear interactions
-- **Complexity Economics**: Systems as evolving, interdependent networks (not equilibrium)
+- **Complexity Economics**: Systems as evolving networks, not equilibrium machines
 - **Narrative Economics**: How collective beliefs drive market behaviors
-- **Prophetic Economics**: Foresight embracing uncertainty and emergence
-- **CAG (Context Augmented Generation)**: LLM synthesis with structured context injection
-
-## Theoretical Frameworks
-
-Five foundational frameworks guide analysis:
-
-1. **Emergence Theory**: Macro patterns from micro interactions
-2. **Complexity Economics**: Adaptive systems, not mechanical equilibria
-3. **Narrative Economics**: Stories drive economic behavior
-4. **Adaptive Markets**: Evolution meets efficient markets
-5. **Prophetic Economics**: Uncertainty as structure, not error
+- **Prophetic Economics**: Structural inference under uncertainty
 
 ## GDELT Integration
 
+GDELT serves as the primary behavioral data source — capturing the information ecosystem's traces rather than official statistics.
+
 ### Rate Limiting
-GDELT enforces strict rate limits. The client implements:
 - Configurable requests per minute
 - Automatic backoff on 429 responses
 - Request queuing for burst operations
 
-### Query Patterns
+### Economic Theme Queries
 ```python
-# Economic event queries
-queries = [
-    "inflation OR deflation",
-    "unemployment OR jobs",
-    "trade tariff sanctions",
-    "monetary policy central bank",
-    "recession depression economic crisis"
+themes = [
+    "ECON_BANKRUPTCY", "ECON_PRICECHANGE", "ECON_DEBT",
+    "TAX_", "TRADE_", "INFLATION", "UNEMPLOYMENT"
 ]
-
-# Theme-based queries
-themes = ["ECON_BANKRUPTCY", "ECON_PRICECHANGE", "ECON_DEBT"]
 ```
 
-## Interactive Dashboard
+## Observable Dashboard
 
-The repository includes an immersive visualization dashboard at `docs/index.html`:
-- Plotly.js interactive charts
-- GSAP scroll animations
-- Live emergence signal feed
-- Geographic economic stress mapping
+The repository includes an interactive visualization at `docs/index.html`:
+- Observable Plot for charts (anomaly timeline, cluster scatter)
+- D3.js for network visualization
+- Sentiment distribution histogram
+- Emergence signal cards
 - Hosted via GitHub Pages
 
 ## Security Guidelines
 
 - **No hardcoded credentials**: Use environment variables
 - **API keys via `.env`**: Never commit secrets
-- **Rate limit awareness**: Respect GDELT and LLM provider limits
+- **Rate limit awareness**: Respect GDELT API limits
 - **Data validation**: All external data passes through Pydantic models
 
 ## Testing
@@ -170,34 +155,25 @@ ruff check src/
 # Install
 pip install -e .
 
-# Analyze a query
-emergentomics analyze "semiconductor supply chain disruption"
-
-# Run full pipeline
-emergentomics pipeline --focus "energy markets"
-
-# Detect opportunities
-emergentomics opportunities
-
-# Generate briefing
-emergentomics briefing
+# Install with full ML dependencies
+pip install -e ".[ml-full]"
 ```
 
 ## Epistemological Constraints
 
 When contributing, remember:
-1. **Emergence over equilibrium**: Economic systems don't settle, they evolve
+1. **Emergence over equilibrium**: Economic systems evolve, they don't settle
 2. **Uncertainty as structure**: Embrace irreducible uncertainty
-3. **Real-time over synthetic**: Prioritize live GDELT data over simulations
-4. **Gap analysis**: Always compare indicators to lived experience
-5. **Probabilistic thinking**: Confidence intervals, not point predictions
+3. **Behavioral traces over official stats**: GDELT captures what people write, not what institutions report
+4. **Detection over prediction**: Find patterns forming, don't forecast outcomes
+5. **Observable output**: All results should be visualizable
 
 ## Contribution Focus Areas
 
 Priority areas for enhancement:
 - Additional GDELT theme parsers
-- New emergence detection algorithms
-- Expanded theoretical framework library
-- Enhanced opportunity scoring models
+- New anomaly detection algorithms
+- GNN implementation for network analysis
+- Enhanced clustering methods
 - Real-time streaming capabilities
-- Multi-language sentiment analysis
+- Additional alternative data source integrations

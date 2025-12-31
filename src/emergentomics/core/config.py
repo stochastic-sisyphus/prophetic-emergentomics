@@ -2,19 +2,19 @@
 Configuration management for Prophetic Emergentomics.
 
 Supports environment variables, .env files, and programmatic configuration.
-Designed for modularity and extensibility.
+Focused on ML/DL emergence detection with GDELT as behavioral data source.
 """
 
 from functools import lru_cache
 from pathlib import Path
-from typing import Literal, Optional
+from typing import Literal
 
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class GDELTSettings(BaseSettings):
-    """GDELT API configuration."""
+    """GDELT API configuration - behavioral data source."""
 
     model_config = SettingsConfigDict(env_prefix="GDELT_")
 
@@ -58,67 +58,64 @@ class GDELTSettings(BaseSettings):
     )
 
 
-class LLMSettings(BaseSettings):
-    """LLM provider configuration."""
+class MLSettings(BaseSettings):
+    """ML/DL model configuration."""
 
-    model_config = SettingsConfigDict(env_prefix="LLM_")
+    model_config = SettingsConfigDict(env_prefix="ML_")
 
-    provider: Literal["anthropic", "openai", "litellm"] = "anthropic"
-    model: str = "claude-sonnet-4-20250514"
+    # Anomaly detection
+    anomaly_contamination: float = Field(default=0.1, description="Expected anomaly rate")
+    anomaly_method: str = "isolation_forest"
 
-    # API keys (loaded from environment)
-    anthropic_api_key: Optional[str] = Field(default=None, alias="ANTHROPIC_API_KEY")
-    openai_api_key: Optional[str] = Field(default=None, alias="OPENAI_API_KEY")
+    # Clustering
+    clustering_method: str = "hdbscan"
+    min_cluster_size: int = 5
+    min_samples: int = 3
 
-    # Generation parameters
-    max_tokens: int = 4096
-    temperature: float = 0.3
-    top_p: float = 0.95
+    # Dimensionality reduction
+    reduction_method: str = "umap"
+    n_components: int = 2
+    n_neighbors: int = 15
 
-    # Rate limiting
-    requests_per_minute: int = 50
-    max_retries: int = 3
+    # GNN settings
+    gnn_hidden_dim: int = 64
+    gnn_num_layers: int = 2
+    gnn_dropout: float = 0.1
 
+    # Training
+    batch_size: int = 32
+    learning_rate: float = 0.001
+    epochs: int = 100
+    early_stopping_patience: int = 10
 
-class CAGSettings(BaseSettings):
-    """Context Augmented Generation configuration."""
-
-    model_config = SettingsConfigDict(env_prefix="CAG_")
-
-    # Context window management
-    max_context_tokens: int = 100000
-    context_priority_decay: float = 0.9
-
-    # Synthesis parameters
-    synthesis_depth: Literal["shallow", "moderate", "deep"] = "moderate"
-    include_historical_context: bool = True
-    include_theoretical_framework: bool = True
-
-    # Pattern detection
+    # Thresholds
     emergence_threshold: float = 0.7
-    anomaly_sensitivity: float = 0.8
-    trend_momentum_window_days: int = 7
+    phase_transition_threshold: float = 0.85
+    novelty_threshold: float = 0.6
 
 
-class MedallionSettings(BaseSettings):
-    """Medallion architecture configuration."""
+class DataSettings(BaseSettings):
+    """Data source configuration."""
 
-    model_config = SettingsConfigDict(env_prefix="MEDALLION_")
+    model_config = SettingsConfigDict(env_prefix="DATA_")
 
     data_dir: Path = Path("data")
-    bronze_dir: Path = Path("data/bronze")
-    silver_dir: Path = Path("data/silver")
-    gold_dir: Path = Path("data/gold")
+    raw_dir: Path = Path("data/raw")
+    processed_dir: Path = Path("data/processed")
+    models_dir: Path = Path("data/models")
     cache_dir: Path = Path("data/cache")
 
     # Data retention
-    bronze_retention_days: int = 90
-    silver_retention_days: int = 365
-    gold_retention_days: int = -1  # Infinite
+    raw_retention_days: int = 90
+    processed_retention_days: int = 365
 
     # Processing
     batch_size: int = 1000
     parallel_workers: int = 4
+
+    # Time series
+    default_lookback_days: int = 365
+    resampling_frequency: str = "1D"
 
 
 class Settings(BaseSettings):
@@ -138,15 +135,15 @@ class Settings(BaseSettings):
 
     # Component settings
     gdelt: GDELTSettings = Field(default_factory=GDELTSettings)
-    llm: LLMSettings = Field(default_factory=LLMSettings)
-    cag: CAGSettings = Field(default_factory=CAGSettings)
-    medallion: MedallionSettings = Field(default_factory=MedallionSettings)
+    ml: MLSettings = Field(default_factory=MLSettings)
+    data: DataSettings = Field(default_factory=DataSettings)
 
-    # Feature flags for modular enhancement
+    # Feature flags
     enable_gdelt_integration: bool = True
-    enable_llm_synthesis: bool = True
-    enable_pattern_detection: bool = True
-    enable_opportunity_alerts: bool = True
+    enable_anomaly_detection: bool = True
+    enable_clustering: bool = True
+    enable_gnn: bool = True
+    enable_simulation: bool = True
 
     @field_validator("log_level", mode="before")
     @classmethod

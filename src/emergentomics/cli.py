@@ -1,8 +1,8 @@
 """
 Command Line Interface for Prophetic Emergentomics.
 
-Provides commands for running analyses, managing pipelines,
-and generating economic intelligence.
+Provides commands for running emergence detection on GDELT data
+and exporting Observable-compatible visualizations.
 """
 
 import argparse
@@ -10,294 +10,275 @@ import asyncio
 import json
 import sys
 from datetime import datetime
+from pathlib import Path
 from typing import Optional
 
-from rich.console import Console
-from rich.panel import Panel
-from rich.table import Table
+import numpy as np
 
 from emergentomics.core.config import get_settings
-from emergentomics.utils.logging import setup_logging
-
-
-console = Console()
+from emergentomics.detection.emergence import EmergenceDetector
 
 
 def print_banner():
     """Print the application banner."""
-    banner = """
+    print("""
 ╔═══════════════════════════════════════════════════════════════╗
 ║           PROPHETIC EMERGENTOMICS                             ║
-║     Event-Driven Economic Intelligence Platform               ║
+║     ML/DL-Driven Emergence Detection                          ║
 ║                                                               ║
-║   CAG Framework + GDELT Real-Time Intelligence                ║
-║   "Traditional econometrics give us the skeleton;             ║
-║    LLMs add the nervous system"                               ║
+║   GDELT Behavioral Data + ML Detection                        ║
+║   "Economies behave like ecologies, not machines"             ║
 ╚═══════════════════════════════════════════════════════════════╝
-    """
-    console.print(Panel(banner, style="blue"))
+    """)
 
 
-async def run_analysis(
-    query: str,
-    focus_area: Optional[str] = None,
-    lookback_hours: int = 24,
-    depth: str = "moderate",
-    output_format: str = "text",
-):
-    """Run a CAG analysis."""
-    from emergentomics.cag.engine import ContextAugmentedEconomicAnalyzer
+def cmd_detect(args):
+    """Run emergence detection on sample or provided data."""
+    print(f"\n[Emergence Detection]")
+    print(f"  Data points: {args.n_points}")
+    print(f"  Output: {args.output or 'stdout'}\n")
 
-    console.print(f"\n[bold blue]Running Analysis[/bold blue]")
-    console.print(f"Query: {query}")
-    console.print(f"Focus Area: {focus_area or query}")
-    console.print(f"Lookback: {lookback_hours}h")
-    console.print(f"Depth: {depth}\n")
-
-    analyzer = ContextAugmentedEconomicAnalyzer()
-
-    with console.status("Analyzing..."):
-        intelligence = await analyzer.analyze(
-            query=query,
-            focus_area=focus_area,
-            lookback_hours=lookback_hours,
-            analysis_depth=depth,
-        )
-
-    if output_format == "json":
-        print(json.dumps(intelligence.model_dump(mode="json"), indent=2, default=str))
+    # Generate sample data or load from file
+    if args.input:
+        print(f"Loading data from {args.input}...")
+        with open(args.input) as f:
+            data_dict = json.load(f)
+        data = np.array(data_dict.get("values", []))
+        timestamps = None
     else:
-        # Pretty print results
-        console.print(Panel(
-            intelligence.executive_summary,
-            title="Executive Summary",
-            style="green",
-        ))
+        print("Using synthetic data for demonstration...")
+        # Generate synthetic data with some anomalies and regime changes
+        np.random.seed(42)
+        n = args.n_points
 
-        if intelligence.key_insights:
-            console.print("\n[bold]Key Insights:[/bold]")
-            for i, insight in enumerate(intelligence.key_insights[:5], 1):
-                console.print(f"  {i}. {insight}")
-
-        if intelligence.emergence_signals:
-            console.print(f"\n[bold yellow]Emergence Signals: {len(intelligence.emergence_signals)}[/bold yellow]")
-            for signal in intelligence.emergence_signals[:3]:
-                console.print(f"  • {signal.emergence_type.value}: {signal.description}")
-
-        console.print(f"\n[bold]Phase Transition Risk:[/bold] {intelligence.phase_transition_risk:.0%}")
-
-        if intelligence.strategic_recommendations:
-            console.print("\n[bold]Recommendations:[/bold]")
-            for rec in intelligence.strategic_recommendations[:3]:
-                console.print(f"  → {rec}")
-
-
-async def run_pipeline(
-    focus_area: str,
-    lookback_hours: int = 24,
-    skip_gold: bool = False,
-):
-    """Run the medallion pipeline."""
-    from emergentomics.medallion.pipeline import MedallionPipeline
-
-    console.print(f"\n[bold blue]Running Medallion Pipeline[/bold blue]")
-    console.print(f"Focus Area: {focus_area}")
-    console.print(f"Lookback: {lookback_hours}h\n")
-
-    pipeline = MedallionPipeline()
-
-    with console.status("Processing Bronze → Silver → Gold..."):
-        result = await pipeline.run(
-            focus_area=focus_area,
-            lookback_hours=lookback_hours,
-            skip_gold=skip_gold,
+        # Base signal with regime change
+        t = np.arange(n)
+        regime_change_point = n // 2
+        data = np.where(
+            t < regime_change_point,
+            np.sin(t / 10) * 0.5 + np.random.randn(n) * 0.2,
+            np.sin(t / 10) * 0.5 + 1.5 + np.random.randn(n) * 0.3,
         )
 
-    # Display results
-    table = Table(title="Pipeline Results")
-    table.add_column("Layer", style="cyan")
-    table.add_column("Metric", style="magenta")
-    table.add_column("Value", style="green")
+        # Add some anomalies
+        anomaly_idx = np.random.choice(n, size=int(n * 0.1), replace=False)
+        data[anomaly_idx] += np.random.randn(len(anomaly_idx)) * 2
 
-    table.add_row("Bronze", "Events Collected", str(result["bronze"].get("events_collected", "N/A")))
-    table.add_row("Silver", "Events in Context", str(result["silver"].get("events_in_context", "N/A")))
-    table.add_row("Silver", "Signals Detected", str(result["silver"].get("signals_detected", "N/A")))
+        timestamps = [
+            datetime.utcnow().replace(hour=i % 24, minute=0, second=0, microsecond=0)
+            for i in range(n)
+        ]
 
-    if not skip_gold:
-        table.add_row("Gold", "Intelligence ID", result["gold"].get("intelligence_id", "N/A"))
-        table.add_row("Gold", "Opportunities", str(result["gold"].get("opportunities_count", 0)))
+    # Run detection
+    detector = EmergenceDetector(
+        anomaly_threshold=args.threshold,
+    )
 
-    console.print(table)
+    print("Running emergence detection...")
+    report = detector.analyze(data, timestamps=timestamps)
 
-    if not skip_gold and result["gold"].get("executive_summary"):
-        console.print(Panel(
-            result["gold"]["executive_summary"],
-            title="Intelligence Summary",
-            style="green",
-        ))
+    # Export to Observable format
+    observable_data = detector.to_observable(report)
 
+    # Output
+    if args.output:
+        output_path = Path(args.output)
+        with open(output_path, "w") as f:
+            json.dump(observable_data, f, indent=2)
+        print(f"\nResults written to {output_path}")
+    else:
+        print("\n" + "=" * 60)
+        print("EMERGENCE DETECTION RESULTS")
+        print("=" * 60)
 
-async def scan_opportunities(
-    lookback_hours: int = 48,
-    min_confidence: float = 0.4,
-):
-    """Scan for economic opportunities."""
-    from emergentomics.intelligence.detector import EconomicOpportunityDetector
+        meta = observable_data["metadata"]
+        summary = observable_data["summary"]
 
-    console.print(f"\n[bold blue]Scanning for Opportunities[/bold blue]")
-    console.print(f"Lookback: {lookback_hours}h")
-    console.print(f"Min Confidence: {min_confidence:.0%}\n")
+        print(f"\nReport ID: {meta['report_id']}")
+        print(f"Generated: {meta['generated_at']}")
+        print(f"Confidence: {meta['overall_confidence']:.2f}")
 
-    detector = EconomicOpportunityDetector()
+        print(f"\nSummary:")
+        print(f"  Signals Detected: {summary['total_signals']}")
+        print(f"  Phase Transitions: {summary['phase_transitions']}")
+        print(f"  Anomaly Rate: {summary['anomaly_rate']:.1%}")
+        print(f"  Clusters: {summary['n_clusters']}")
 
-    with console.status("Scanning..."):
-        opportunities = await detector.scan_opportunities(
-            lookback_hours=lookback_hours,
-            min_confidence=min_confidence,
-        )
+        if observable_data["signals"]:
+            print(f"\nSignals:")
+            for sig in observable_data["signals"]:
+                print(f"  - [{sig['type']}] {sig['description'][:60]}...")
+                print(f"    Confidence: {sig['confidence']:.2f}, Method: {sig['method']}")
 
-    if not opportunities:
-        console.print("[yellow]No significant opportunities detected.[/yellow]")
-        return
-
-    console.print(f"[bold green]Found {len(opportunities)} opportunities:[/bold green]\n")
-
-    for i, opp in enumerate(opportunities[:10], 1):
-        console.print(f"[bold]{i}. {opp.title}[/bold]")
-        console.print(f"   Type: {opp.opportunity_type.value}")
-        console.print(f"   Confidence: {opp.confidence:.0%}")
-        console.print(f"   Urgency: {opp.urgency}")
-        console.print(f"   {opp.description}\n")
+        print("\n" + "=" * 60)
 
 
-async def generate_briefing(
-    lookback_hours: int = 24,
-):
-    """Generate an economic briefing."""
-    from emergentomics.synthesis.engine import EconomicSynthesisEngine
+def cmd_export_dashboard(args):
+    """Export sample data for the Observable dashboard."""
+    print(f"\nExporting dashboard data to {args.output}...")
 
-    console.print(f"\n[bold blue]Generating Economic Briefing[/bold blue]")
-    console.print(f"Lookback: {lookback_hours}h\n")
+    # Generate comprehensive sample data
+    np.random.seed(42)
 
-    engine = EconomicSynthesisEngine()
+    observable_data = {
+        "metadata": {
+            "report_id": f"demo_{datetime.utcnow().strftime('%Y%m%d')}",
+            "generated_at": datetime.utcnow().isoformat(),
+            "overall_confidence": 0.73,
+            "models_used": ["isolation_forest", "hdbscan", "trend_analysis"],
+        },
+        "summary": {
+            "total_signals": 5,
+            "phase_transitions": 1,
+            "anomaly_rate": 0.12,
+            "n_clusters": 4,
+        },
+        "anomalies": [
+            {
+                "timestamp": (datetime.utcnow().replace(day=i+1)).isoformat(),
+                "score": float(0.4 + np.sin(i/5) * 0.3 + np.random.rand() * 0.2),
+                "is_anomaly": np.random.rand() < 0.12,
+            }
+            for i in range(30)
+        ],
+        "clusters": {
+            "scatter": [
+                {
+                    "x": float(np.random.randn() + [[-1, -1], [1, -1], [-1, 1], [1, 1]][i % 4][0]),
+                    "y": float(np.random.randn() + [[-1, -1], [1, -1], [-1, 1], [1, 1]][i % 4][1]),
+                    "cluster": i % 4,
+                }
+                for i in range(100)
+            ],
+            "n_clusters": 4,
+            "silhouette": 0.65,
+        },
+        "signals": [
+            {
+                "type": "anomaly_cascade",
+                "description": "Detected correlated anomalies in labor market indicators",
+                "confidence": 0.82,
+                "method": "isolation_forest",
+            },
+            {
+                "type": "cluster_formation",
+                "description": "New economic regime cluster identified",
+                "confidence": 0.71,
+                "method": "hdbscan",
+            },
+            {
+                "type": "phase_transition",
+                "description": "Significant shift in primary indicators",
+                "confidence": 0.68,
+                "method": "trend_analysis",
+            },
+        ],
+    }
 
-    with console.status("Generating briefing..."):
-        briefing = await engine.generate_economic_briefing(
-            lookback_hours=lookback_hours,
-        )
+    with open(args.output, "w") as f:
+        json.dump(observable_data, f, indent=2)
 
-    console.print(Panel(
-        briefing.get("executive_briefing", "No briefing generated"),
-        title=f"Economic Briefing - {datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}",
-        style="blue",
-    ))
+    print(f"Dashboard data exported to {args.output}")
+    print("Use this with the Observable dashboard at docs/index.html")
+
+
+def cmd_info(args):
+    """Show system information."""
+    settings = get_settings()
+
+    print("\nProphetic Emergentomics Configuration")
+    print("=" * 40)
+    print(f"App Name: {settings.app_name}")
+    print(f"Version: {settings.app_version}")
+    print(f"Debug: {settings.debug}")
+    print(f"Log Level: {settings.log_level}")
+
+    print("\nFeature Flags:")
+    print(f"  GDELT Integration: {settings.enable_gdelt_integration}")
+    print(f"  Anomaly Detection: {settings.enable_anomaly_detection}")
+    print(f"  Clustering: {settings.enable_clustering}")
+    print(f"  GNN: {settings.enable_gnn}")
+
+    print("\nML Settings:")
+    print(f"  Anomaly Method: {settings.ml.anomaly_method}")
+    print(f"  Clustering Method: {settings.ml.clustering_method}")
+    print(f"  Emergence Threshold: {settings.ml.emergence_threshold}")
 
 
 def main():
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(
-        description="Prophetic Emergentomics - Event-Driven Economic Intelligence",
+        description="Prophetic Emergentomics - ML-Driven Emergence Detection",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Examples:
-  emergentomics analyze "US labor market trends"
-  emergentomics analyze --focus "Technology Sector" "AI impact on employment"
-  emergentomics pipeline --focus "Monetary Policy" --lookback 48
-  emergentomics opportunities --lookback 72 --min-confidence 0.5
-  emergentomics briefing
-        """,
     )
 
     parser.add_argument(
-        "--debug",
+        "--no-banner",
         action="store_true",
-        help="Enable debug logging",
-    )
-    parser.add_argument(
-        "--json",
-        action="store_true",
-        help="Output in JSON format",
+        help="Suppress banner output",
     )
 
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
-    # Analyze command
-    analyze_parser = subparsers.add_parser("analyze", help="Run CAG analysis")
-    analyze_parser.add_argument("query", help="Analysis query")
-    analyze_parser.add_argument("--focus", "-f", help="Focus area for analysis")
-    analyze_parser.add_argument("--lookback", "-l", type=int, default=24, help="Lookback hours")
-    analyze_parser.add_argument(
-        "--depth", "-d",
-        choices=["shallow", "moderate", "deep"],
-        default="moderate",
-        help="Analysis depth",
+    # detect command
+    detect_parser = subparsers.add_parser(
+        "detect",
+        help="Run emergence detection on data",
     )
+    detect_parser.add_argument(
+        "-n", "--n-points",
+        type=int,
+        default=100,
+        help="Number of data points for synthetic data (default: 100)",
+    )
+    detect_parser.add_argument(
+        "-i", "--input",
+        type=str,
+        help="Input JSON file with data",
+    )
+    detect_parser.add_argument(
+        "-o", "--output",
+        type=str,
+        help="Output file for Observable JSON (default: stdout)",
+    )
+    detect_parser.add_argument(
+        "-t", "--threshold",
+        type=float,
+        default=0.7,
+        help="Anomaly threshold (default: 0.7)",
+    )
+    detect_parser.set_defaults(func=cmd_detect)
 
-    # Pipeline command
-    pipeline_parser = subparsers.add_parser("pipeline", help="Run medallion pipeline")
-    pipeline_parser.add_argument("--focus", "-f", required=True, help="Focus area")
-    pipeline_parser.add_argument("--lookback", "-l", type=int, default=24, help="Lookback hours")
-    pipeline_parser.add_argument("--skip-gold", action="store_true", help="Skip gold synthesis")
+    # export command
+    export_parser = subparsers.add_parser(
+        "export",
+        help="Export sample data for Observable dashboard",
+    )
+    export_parser.add_argument(
+        "-o", "--output",
+        type=str,
+        default="docs/data/sample.json",
+        help="Output file path",
+    )
+    export_parser.set_defaults(func=cmd_export_dashboard)
 
-    # Opportunities command
-    opp_parser = subparsers.add_parser("opportunities", help="Scan for opportunities")
-    opp_parser.add_argument("--lookback", "-l", type=int, default=48, help="Lookback hours")
-    opp_parser.add_argument("--min-confidence", "-c", type=float, default=0.4, help="Minimum confidence")
-
-    # Briefing command
-    brief_parser = subparsers.add_parser("briefing", help="Generate economic briefing")
-    brief_parser.add_argument("--lookback", "-l", type=int, default=24, help="Lookback hours")
+    # info command
+    info_parser = subparsers.add_parser(
+        "info",
+        help="Show configuration info",
+    )
+    info_parser.set_defaults(func=cmd_info)
 
     args = parser.parse_args()
 
-    # Setup
-    log_level = "DEBUG" if args.debug else "INFO"
-    setup_logging(level=log_level)
-
-    if not args.json:
+    if not args.no_banner:
         print_banner()
 
-    if not args.command:
+    if args.command is None:
         parser.print_help()
-        sys.exit(1)
+        sys.exit(0)
 
-    # Run appropriate command
-    try:
-        if args.command == "analyze":
-            asyncio.run(run_analysis(
-                query=args.query,
-                focus_area=args.focus,
-                lookback_hours=args.lookback,
-                depth=args.depth,
-                output_format="json" if args.json else "text",
-            ))
-
-        elif args.command == "pipeline":
-            asyncio.run(run_pipeline(
-                focus_area=args.focus,
-                lookback_hours=args.lookback,
-                skip_gold=args.skip_gold,
-            ))
-
-        elif args.command == "opportunities":
-            asyncio.run(scan_opportunities(
-                lookback_hours=args.lookback,
-                min_confidence=args.min_confidence,
-            ))
-
-        elif args.command == "briefing":
-            asyncio.run(generate_briefing(
-                lookback_hours=args.lookback,
-            ))
-
-    except KeyboardInterrupt:
-        console.print("\n[yellow]Interrupted[/yellow]")
-        sys.exit(130)
-    except Exception as e:
-        console.print(f"\n[red]Error: {e}[/red]")
-        if args.debug:
-            raise
-        sys.exit(1)
+    args.func(args)
 
 
 if __name__ == "__main__":

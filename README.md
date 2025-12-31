@@ -4,13 +4,14 @@
 
 ### 🔮 [**View Interactive Dashboard →**](https://stochastic-sisyphus.github.io/prophetic-emergentomics/)
 
-*Experience the economic intelligence platform in action*
+*ML-driven emergence detection with Observable visualization*
 
 ---
 
-[![CAG + GDELT](https://img.shields.io/badge/CAG-GDELT%20Integration-6366f1?style=for-the-badge)](https://stochastic-sisyphus.github.io/prophetic-emergentomics/)
+[![ML/DL + GDELT](https://img.shields.io/badge/ML-GDELT%20Integration-6366f1?style=for-the-badge)](https://stochastic-sisyphus.github.io/prophetic-emergentomics/)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10+-3776ab?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
+[![Observable](https://img.shields.io/badge/Observable-Plot-06b6d4?style=for-the-badge)](https://observablehq.com/@observablehq/plot)
 
 </div>
 
@@ -20,11 +21,11 @@
 
 > Beyond Prediction—Frameworks for Economic Evolution
 
-> *"Traditional econometrics give us the skeleton; LLMs add the nervous system. GDP says growth while people feel recession — we bridge that gap."*
+> *"Economies behave like ecologies, not machines. We detect emergence, not predict outcomes."*
 
-## 🚀 Event-Driven Economic Intelligence Platform
+## 🚀 ML/DL-Driven Emergence Detection Platform
 
-This repository now includes a fully implemented **Context Augmented Generation (CAG) framework** enhanced with **GDELT real-time intelligence integration**. The platform transforms theoretical economic frameworks into actionable intelligence.
+This repository implements **machine learning-based emergence detection** with **GDELT as a behavioral data source**. The platform detects phase transitions and regime changes before they manifest in aggregate statistics.
 
 ### Quick Start
 
@@ -32,31 +33,27 @@ This repository now includes a fully implemented **Context Augmented Generation 
 # Install
 pip install -e .
 
-# Configure (add your API key)
-cp .env.example .env
-
-# Run analysis
-emergentomics analyze "US labor market emerging trends"
-emergentomics briefing
+# Install with full ML dependencies
+pip install -e ".[ml-full]"
 ```
 
 ### Key Capabilities
 
 | Feature | Description |
 |---------|-------------|
-| **CAG Framework** | Synthesizes theoretical predictions with real-world events |
-| **GDELT Integration** | Real-time monitoring of 100,000+ global news sources |
-| **Emergence Detection** | 8 signal types: phase transitions, narrative shifts, sentiment divergence |
-| **Opportunity Detection** | Pre-market opportunity identification |
-| **Gap Analysis** | Explains why statistics diverge from lived economic reality |
+| **GDELT Integration** | Behavioral traces from 100,000+ global news sources |
+| **Anomaly Detection** | Isolation forest, statistical methods for outlier detection |
+| **Clustering** | HDBSCAN, K-means for economic regime identification |
+| **Emergence Detection** | 8 signal types: phase transitions, cluster formation, anomaly cascades |
+| **Observable Output** | JSON export compatible with Observable visualization |
 
 ### Architecture
 
 ```
-Bronze Layer → Silver Layer → Gold Layer
-     ↓              ↓              ↓
- Raw Data     Context Build    LLM Synthesis
- (GDELT)      (Enrichment)     (Intelligence)
+Data Layer → Detection Layer → Observable Output
+     ↓              ↓                ↓
+   GDELT      ML/DL Models      Visualization
+ (Behavioral)  (sklearn)        (Observable Plot)
 ```
 
 ---

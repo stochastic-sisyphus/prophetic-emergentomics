@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "prophetic-emergentomics"
 version = "0.1.0"
-description = "Event-Driven Economic Intelligence Platform: CAG + GDELT for Emergent Economic Analysis"
+description = "ML/DL-driven emergence detection in complex economic systems with GDELT behavioral data"
 readme = "README.md"
 license = {text = "MIT"}
 authors = [
@@ -15,13 +15,13 @@ keywords = [
     "economics",
     "emergence",
     "complexity",
-    "forecasting",
+    "machine-learning",
+    "anomaly-detection",
+    "clustering",
     "GDELT",
-    "CAG",
-    "context-augmented-generation",
-    "economic-intelligence",
-    "real-time-analytics",
-    "LLM"
+    "graph-neural-networks",
+    "time-series",
+    "reinforcement-learning",
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -41,19 +41,16 @@ dependencies = [
     "numpy>=1.24.0",
     "polars>=0.20.0",
 
-    # HTTP and API clients
+    # ML/DL core
+    "scikit-learn>=1.4.0",
+
+    # HTTP and API clients (for GDELT)
     "httpx>=0.25.0",
     "aiohttp>=3.9.0",
     "requests>=2.31.0",
 
-    # LLM integration
-    "anthropic>=0.18.0",
-    "openai>=1.12.0",
-    "litellm>=1.20.0",
-
     # Data storage and caching
     "diskcache>=5.6.0",
-    "sqlalchemy>=2.0.0",
     "duckdb>=0.10.0",
 
     # Async utilities
@@ -66,21 +63,17 @@ dependencies = [
 
     # Date/time handling
     "python-dateutil>=2.8.0",
-    "pytz>=2024.1",
 
     # Network analysis
     "networkx>=3.2.0",
 
-    # Text processing
-    "beautifulsoup4>=4.12.0",
-    "html5lib>=1.1",
-
-    # Visualization (optional but useful)
+    # Visualization
     "plotly>=5.18.0",
 
-    # Logging and monitoring
+    # Logging and CLI
     "structlog>=24.1.0",
     "rich>=13.7.0",
+    "typer>=0.9.0",
 ]
 
 [project.optional-dependencies]
@@ -93,11 +86,15 @@ dev = [
     "mypy>=1.8.0",
     "pre-commit>=3.6.0",
 ]
-ml = [
-    "scikit-learn>=1.4.0",
+ml-full = [
+    # Deep learning
     "torch>=2.2.0",
-    "transformers>=4.37.0",
-    "sentence-transformers>=2.3.0",
+    # Advanced clustering
+    "hdbscan>=0.8.33",
+    # Dimensionality reduction
+    "umap-learn>=0.5.5",
+    # Graph neural networks
+    "torch-geometric>=2.4.0",
 ]
 notebooks = [
     "jupyter>=1.0.0",

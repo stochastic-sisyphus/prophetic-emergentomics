@@ -1,40 +1,54 @@
 """
-Prophetic Emergentomics: Event-Driven Economic Intelligence Platform
+Prophetic Emergentomics: ML/DL-Driven Emergence Detection
 
-A Context Augmented Generation (CAG) framework enhanced with GDELT real-time
-intelligence for emergent economic analysis.
+Machine learning framework for detecting emergence in complex economic systems.
+GDELT provides behavioral data; ML/DL models detect phase transitions and regime changes.
 
 Core Philosophy:
-- Traditional econometrics give us the skeleton; LLMs add the nervous system
-- GDP says growth while people feel recession - we bridge that gap
-- Forecasting isn't broken, it's outdated for systems evolving faster than it can interpret
+- Economies behave like ecologies, not machines
+- Emergence detection, not prediction
+- Uncertainty as structure, not error
+- Behavioral traces reveal what statistics miss
 
 Architecture:
-- Bronze Layer: Raw data ingestion (GDELT events, sentiment, economic indicators)
-- Silver Layer: Cleaned, consolidated, contextually enriched data
-- Gold Layer: Analytics-ready, LLM-synthesized economic intelligence
+- Data Layer: GDELT events + alternative behavioral data sources
+- Detection Layer: Anomaly detection, clustering, network analysis
+- Output Layer: Observable-compatible visualization data
 
 Key Components:
-- CAG Framework: Context Augmented Generation for economic analysis
-- GDELT Integration: Real-time global event and sentiment tracking
-- LLM Synthesis: Bridge between statistical metrics and lived economic reality
-- Pattern Discovery: Emergence detection and opportunity identification
+- GDELT Integration: Real-time global event and sentiment behavioral traces
+- Anomaly Detection: Isolation forest, statistical methods for outlier detection
+- Clustering: HDBSCAN, K-means for economic regime identification
+- Network Analysis: Graph structures for economic interconnections
+- Observable Output: JSON format compatible with Observable visualization
 """
 
 __version__ = "0.1.0"
 __author__ = "Vanessa Beck"
 
 from emergentomics.core.config import Settings, get_settings
-from emergentomics.cag.engine import ContextAugmentedEconomicAnalyzer
+from emergentomics.core.models import (
+    EmergenceSignal,
+    EmergenceType,
+    EmergenceReport,
+    GDELTEvent,
+    GDELTSentiment,
+)
 from emergentomics.gdelt.client import GDELTClient
-from emergentomics.synthesis.engine import EconomicSynthesisEngine
-from emergentomics.intelligence.detector import EconomicOpportunityDetector
+from emergentomics.detection.anomaly import AnomalyDetector
+from emergentomics.detection.clustering import ClusterAnalyzer
+from emergentomics.detection.emergence import EmergenceDetector
 
 __all__ = [
     "Settings",
     "get_settings",
-    "ContextAugmentedEconomicAnalyzer",
+    "EmergenceSignal",
+    "EmergenceType",
+    "EmergenceReport",
+    "GDELTEvent",
+    "GDELTSentiment",
     "GDELTClient",
-    "EconomicSynthesisEngine",
-    "EconomicOpportunityDetector",
+    "AnomalyDetector",
+    "ClusterAnalyzer",
+    "EmergenceDetector",
 ]
