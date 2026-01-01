@@ -56,6 +56,27 @@ Data Layer → Detection Layer → Observable Output
  (Behavioral)  (sklearn)        (Observable Plot)
 ```
 
+### Observable Notebook
+
+**Open in Observable:**
+
+1. Go to [observablehq.com](https://observablehq.com) and create a new notebook
+2. Copy cells from [`observable/prophetic-emergentomics.ojs`](observable/prophetic-emergentomics.ojs)
+3. Upload [`docs/data/emergence-data.json`](docs/data/emergence-data.json) as a file attachment
+
+Or fetch data directly after enabling GitHub Pages:
+```javascript
+data = fetch("https://stochastic-sisyphus.github.io/prophetic-emergentomics/data/emergence-data.json")
+  .then(r => r.json())
+```
+
+The notebook includes:
+- Anomaly detection timeline with threshold markers
+- PCA cluster scatter plot showing economic regimes
+- GDELT sentiment distribution histogram
+- Economic network topology visualization
+- Emergence signal cards with confidence scores
+
 ---
 
 **WORKING PAPER**
