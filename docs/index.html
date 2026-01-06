@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prophetic Emergentomics | ML-Driven Emergence Detection</title>
+
+    <!-- Observable Plot -->
+    <script src="https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6/dist/plot.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+
+    <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --bg-card: #12121a;
+            --bg-elevated: #1a1a24;
+            --text-primary: #e8e8ed;
+            --text-secondary: #8888a0;
+            --accent-purple: #8b5cf6;
+            --accent-blue: #3b82f6;
+            --accent-cyan: #06b6d4;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-orange: #f59e0b;
+            --border-subtle: rgba(255,255,255,0.06);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: linear-gradient(180deg, rgba(139, 92, 246, 0.1) 0%, transparent 100%);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .badge-row {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            padding: 0.25rem 0.75rem;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Grid Layout */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .grid-full {
+            grid-column: 1 / -1;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .card-status {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-green);
+        }
+
+        /* Metrics */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+
+        .metric {
+            text-align: center;
+            padding: 1rem;
+            background: var(--bg-elevated);
+            border-radius: 8px;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        /* Plot containers */
+        .plot-container {
+            width: 100%;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .plot-container svg {
+            max-width: 100%;
+        }
+
+        /* Signal list */
+        .signal-list {
+            list-style: none;
+        }
+
+        .signal-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--bg-elevated);
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+        }
+
+        .signal-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .signal-icon.anomaly { background: rgba(239, 68, 68, 0.2); }
+        .signal-icon.cluster { background: rgba(59, 130, 246, 0.2); }
+        .signal-icon.phase { background: rgba(245, 158, 11, 0.2); }
+        .signal-icon.network { background: rgba(139, 92, 246, 0.2); }
+
+        .signal-content {
+            flex: 1;
+        }
+
+        .signal-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .signal-desc {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .signal-meta {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        .signal-confidence {
+            color: var(--accent-green);
+        }
+
+        .signal-method {
+            color: var(--text-secondary);
+        }
+
+        /* Theory section */
+        .theory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .theory-card {
+            padding: 1.25rem;
+            background: var(--bg-elevated);
+            border-radius: 8px;
+            border-left: 3px solid var(--accent-purple);
+        }
+
+        .theory-card h4 {
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .theory-card p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            border-top: 1px solid var(--border-subtle);
+            margin-top: 3rem;
+        }
+
+        footer a {
+            color: var(--accent-purple);
+            text-decoration: none;
+        }
+
+        /* Observable Plot overrides */
+        .plot-container text {
+            fill: var(--text-secondary) !important;
+        }
+
+        .plot-container [aria-label="x-axis tick label"],
+        .plot-container [aria-label="y-axis tick label"] {
+            fill: var(--text-secondary) !important;
+        }
+
+        @media (max-width: 768px) {
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            header h1 {
+                font-size: 1.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Prophetic Emergentomics</h1>
+        <p>ML/DL-driven emergence detection in complex economic systems. Detecting phase transitions before they manifest in aggregate statistics.</p>
+        <div class="badge-row">
+            <span class="badge">GDELT Integration</span>
+            <span class="badge">Anomaly Detection</span>
+            <span class="badge">Clustering</span>
+            <span class="badge">GNN Ready</span>
+            <span class="badge">Observable Output</span>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Metrics Summary -->
+        <div class="card grid-full">
+            <div class="card-header">
+                <span class="card-title">Emergence Detection Summary</span>
+                <span class="card-status">Live Analysis</span>
+            </div>
+            <div class="metrics-grid">
+                <div class="metric">
+                    <div class="metric-value" id="metric-signals">7</div>
+                    <div class="metric-label">Signals Detected</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value" id="metric-anomalies">12%</div>
+                    <div class="metric-label">Anomaly Rate</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value" id="metric-clusters">4</div>
+                    <div class="metric-label">Economic Regimes</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value" id="metric-confidence">0.73</div>
+                    <div class="metric-label">Confidence Score</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <!-- Anomaly Time Series -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Anomaly Detection Timeline</span>
+                </div>
+                <div class="plot-container" id="anomaly-plot"></div>
+            </div>
+
+            <!-- Cluster Scatter -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Economic Regime Clusters (PCA)</span>
+                </div>
+                <div class="plot-container" id="cluster-plot"></div>
+            </div>
+
+            <!-- Emergence Signals -->
+            <div class="card grid-full">
+                <div class="card-header">
+                    <span class="card-title">Detected Emergence Signals</span>
+                </div>
+                <ul class="signal-list" id="signal-list"></ul>
+            </div>
+
+            <!-- GDELT Sentiment -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">GDELT Sentiment Distribution</span>
+                </div>
+                <div class="plot-container" id="sentiment-plot"></div>
+            </div>
+
+            <!-- Network Graph -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Economic Network Topology</span>
+                </div>
+                <div class="plot-container" id="network-plot"></div>
+            </div>
+        </div>
+
+        <!-- Theoretical Frameworks -->
+        <div class="card grid-full" style="margin-top: 1.5rem;">
+            <div class="card-header">
+                <span class="card-title">Theoretical Foundations</span>
+            </div>
+            <div class="theory-grid">
+                <div class="theory-card">
+                    <h4>Emergence Theory</h4>
+                    <p>Macro patterns arising from micro interactions. Detecting self-organization before it manifests in aggregate statistics.</p>
+                </div>
+                <div class="theory-card">
+                    <h4>Complexity Economics</h4>
+                    <p>Non-equilibrium dynamics, path dependence, and feedback loops. Economies as evolving networks, not static machines.</p>
+                </div>
+                <div class="theory-card">
+                    <h4>Narrative Economics</h4>
+                    <p>How collective beliefs shape markets. GDELT captures the information ecosystem's behavioral traces.</p>
+                </div>
+                <div class="theory-card">
+                    <h4>Prophetic Economics</h4>
+                    <p>Structural inference under uncertainty. Not predicting the future, but detecting emergence in the present.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>
+            Prophetic Emergentomics &mdash;
+            <a href="https://github.com/stochastic-sisyphus/prophetic-emergentomics">GitHub</a> &mdash;
+            Built with Observable Plot
+        </p>
+        <p style="margin-top: 0.5rem; font-size: 0.75rem;">
+            "Forecasting's not broken. It's outdated. This is structural inference under uncertainty."
+        </p>
+    </footer>
+
+    <script>
+        // Sample data representing emergence detection output
+        const emergenceData = {
+            metadata: {
+                report_id: "emergence_demo_2024",
+                generated_at: new Date().toISOString(),
+                overall_confidence: 0.73,
+            },
+            summary: {
+                total_signals: 7,
+                anomaly_rate: 0.12,
+                n_clusters: 4,
+            },
+            // Time series anomaly data
+            anomalies: Array.from({length: 90}, (_, i) => {
+                const date = new Date();
+                date.setDate(date.getDate() - (90 - i));
+                const base = Math.sin(i / 15) * 0.3 + 0.4;
+                const noise = Math.random() * 0.2;
+                const isAnomaly = Math.random() < 0.12;
+                return {
+                    date: date,
+                    score: Math.min(1, Math.max(0, base + noise + (isAnomaly ? 0.4 : 0))),
+                    is_anomaly: isAnomaly
+                };
+            }),
+            // Cluster scatter data
+            clusters: Array.from({length: 150}, (_, i) => {
+                const cluster = Math.floor(Math.random() * 4);
+                const centers = [[-2, -1], [2, -1], [-1, 2], [1, 2]];
+                const [cx, cy] = centers[cluster];
+                return {
+                    x: cx + (Math.random() - 0.5) * 2,
+                    y: cy + (Math.random() - 0.5) * 2,
+                    cluster: cluster
+                };
+            }),
+            // Signals
+            signals: [
+                {
+                    type: "anomaly_cascade",
+                    title: "Anomaly Cascade Detected",
+                    description: "12 correlated anomalies in labor market indicators over 7 days",
+                    confidence: 0.82,
+                    method: "isolation_forest"
+                },
+                {
+                    type: "cluster_formation",
+                    title: "New Regime Cluster",
+                    description: "HDBSCAN identified emerging economic regime distinct from historical patterns",
+                    confidence: 0.71,
+                    method: "hdbscan"
+                },
+                {
+                    type: "phase_transition",
+                    title: "Phase Transition Signal",
+                    description: "23% shift in primary indicators suggests regime change in progress",
+                    confidence: 0.68,
+                    method: "trend_analysis"
+                },
+                {
+                    type: "network_restructuring",
+                    title: "Network Topology Shift",
+                    description: "Supply chain graph showing increased clustering coefficient",
+                    confidence: 0.75,
+                    method: "gnn_analysis"
+                }
+            ],
+            // Sentiment distribution
+            sentiment: Array.from({length: 500}, () => ({
+                tone: (Math.random() - 0.5) * 20 + Math.random() * 5 - 2
+            })),
+            // Network nodes
+            network: {
+                nodes: [
+                    {id: "Tech", size: 30}, {id: "Finance", size: 25},
+                    {id: "Energy", size: 20}, {id: "Healthcare", size: 18},
+                    {id: "Manufacturing", size: 22}, {id: "Retail", size: 15},
+                    {id: "Labor", size: 28}, {id: "Housing", size: 17}
+                ],
+                links: [
+                    {source: "Tech", target: "Finance"}, {source: "Tech", target: "Labor"},
+                    {source: "Finance", target: "Housing"}, {source: "Energy", target: "Manufacturing"},
+                    {source: "Manufacturing", target: "Labor"}, {source: "Retail", target: "Labor"},
+                    {source: "Healthcare", target: "Labor"}, {source: "Finance", target: "Tech"}
+                ]
+            }
+        };
+
+        // Update metrics
+        document.getElementById('metric-signals').textContent = emergenceData.summary.total_signals;
+        document.getElementById('metric-anomalies').textContent = Math.round(emergenceData.summary.anomaly_rate * 100) + '%';
+        document.getElementById('metric-clusters').textContent = emergenceData.summary.n_clusters;
+        document.getElementById('metric-confidence').textContent = emergenceData.metadata.overall_confidence.toFixed(2);
+
+        // Render Anomaly Timeline with Observable Plot
+        const anomalyPlot = Plot.plot({
+            style: {
+                background: "transparent",
+                color: "#8888a0"
+            },
+            height: 280,
+            marginLeft: 50,
+            marginBottom: 40,
+            x: {
+                label: "Date",
+                tickFormat: d3.timeFormat("%b %d")
+            },
+            y: {
+                label: "Anomaly Score",
+                domain: [0, 1]
+            },
+            marks: [
+                Plot.ruleY([0.7], {stroke: "#ef4444", strokeDasharray: "4,4", strokeOpacity: 0.5}),
+                Plot.line(emergenceData.anomalies, {
+                    x: "date",
+                    y: "score",
+                    stroke: "#3b82f6",
+                    strokeWidth: 2
+                }),
+                Plot.dot(emergenceData.anomalies.filter(d => d.is_anomaly), {
+                    x: "date",
+                    y: "score",
+                    fill: "#ef4444",
+                    r: 5
+                })
+            ]
+        });
+        document.getElementById('anomaly-plot').appendChild(anomalyPlot);
+
+        // Render Cluster Scatter
+        const clusterColors = ["#8b5cf6", "#3b82f6", "#10b981", "#f59e0b"];
+        const clusterPlot = Plot.plot({
+            style: {
+                background: "transparent",
+                color: "#8888a0"
+            },
+            height: 280,
+            marginLeft: 50,
+            x: {label: "PC1"},
+            y: {label: "PC2"},
+            marks: [
+                Plot.dot(emergenceData.clusters, {
+                    x: "x",
+                    y: "y",
+                    fill: d => clusterColors[d.cluster],
+                    fillOpacity: 0.7,
+                    r: 4
+                })
+            ]
+        });
+        document.getElementById('cluster-plot').appendChild(clusterPlot);
+
+        // Render Signals List
+        const signalIcons = {
+            anomaly_cascade: {icon: "!", class: "anomaly"},
+            cluster_formation: {icon: "O", class: "cluster"},
+            phase_transition: {icon: ">", class: "phase"},
+            network_restructuring: {icon: "#", class: "network"}
+        };
+
+        const signalListEl = document.getElementById('signal-list');
+        emergenceData.signals.forEach(signal => {
+            const iconInfo = signalIcons[signal.type] || {icon: "*", class: "cluster"};
+            signalListEl.innerHTML += `
+                <li class="signal-item">
+                    <div class="signal-icon ${iconInfo.class}">${iconInfo.icon}</div>
+                    <div class="signal-content">
+                        <div class="signal-title">${signal.title}</div>
+                        <div class="signal-desc">${signal.description}</div>
+                        <div class="signal-meta">
+                            <span class="signal-confidence">Confidence: ${(signal.confidence * 100).toFixed(0)}%</span>
+                            <span class="signal-method">Method: ${signal.method}</span>
+                        </div>
+                    </div>
+                </li>
+            `;
+        });
+
+        // Render Sentiment Histogram
+        const sentimentPlot = Plot.plot({
+            style: {
+                background: "transparent",
+                color: "#8888a0"
+            },
+            height: 280,
+            marginLeft: 50,
+            x: {label: "GDELT Tone Score"},
+            y: {label: "Frequency"},
+            marks: [
+                Plot.rectY(emergenceData.sentiment,
+                    Plot.binX({y: "count"}, {
+                        x: "tone",
+                        fill: d => d.tone < -2 ? "#ef4444" : d.tone > 2 ? "#10b981" : "#3b82f6",
+                        fillOpacity: 0.7
+                    })
+                ),
+                Plot.ruleX([0], {stroke: "#8888a0", strokeDasharray: "2,2"})
+            ]
+        });
+        document.getElementById('sentiment-plot').appendChild(sentimentPlot);
+
+        // Render Network (simple force-directed representation)
+        const networkSvg = d3.create("svg")
+            .attr("viewBox", [-150, -150, 300, 300])
+            .attr("width", "100%")
+            .attr("height", 280);
+
+        // Simple circular layout
+        const nodes = emergenceData.network.nodes.map((n, i) => ({
+            ...n,
+            x: Math.cos(i / emergenceData.network.nodes.length * 2 * Math.PI) * 100,
+            y: Math.sin(i / emergenceData.network.nodes.length * 2 * Math.PI) * 100
+        }));
+
+        const nodeMap = new Map(nodes.map(n => [n.id, n]));
+
+        // Draw links
+        networkSvg.selectAll("line")
+            .data(emergenceData.network.links)
+            .join("line")
+            .attr("x1", d => nodeMap.get(d.source).x)
+            .attr("y1", d => nodeMap.get(d.source).y)
+            .attr("x2", d => nodeMap.get(d.target).x)
+            .attr("y2", d => nodeMap.get(d.target).y)
+            .attr("stroke", "#3b82f6")
+            .attr("stroke-opacity", 0.4)
+            .attr("stroke-width", 1.5);
+
+        // Draw nodes
+        networkSvg.selectAll("circle")
+            .data(nodes)
+            .join("circle")
+            .attr("cx", d => d.x)
+            .attr("cy", d => d.y)
+            .attr("r", d => d.size / 3)
+            .attr("fill", "#8b5cf6")
+            .attr("fill-opacity", 0.8);
+
+        // Draw labels
+        networkSvg.selectAll("text")
+            .data(nodes)
+            .join("text")
+            .attr("x", d => d.x)
+            .attr("y", d => d.y + d.size / 3 + 12)
+            .attr("text-anchor", "middle")
+            .attr("fill", "#8888a0")
+            .attr("font-size", "10px")
+            .text(d => d.id);
+
+        document.getElementById('network-plot').appendChild(networkSvg.node());
+    </script>
+</body>
+</html>

@@ -1,8 +1,83 @@
 # The Prophecy of the Emergent Economy: Beyond Prediction—Frameworks for Economic Evolution
+
+<div align="center">
+
+### 🔮 [**View Interactive Dashboard →**](https://stochastic-sisyphus.github.io/prophetic-emergentomics/)
+
+*ML-driven emergence detection with Observable visualization*
+
 ---
+
+[![ML/DL + GDELT](https://img.shields.io/badge/ML-GDELT%20Integration-6366f1?style=for-the-badge)](https://stochastic-sisyphus.github.io/prophetic-emergentomics/)
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10+-3776ab?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
+[![Observable](https://img.shields.io/badge/Observable-Plot-06b6d4?style=for-the-badge)](https://observablehq.com/@observablehq/plot)
+
+</div>
+
+---
+
 # The Prophecy of the Emergent Economy
 
 > Beyond Prediction—Frameworks for Economic Evolution
+
+> *"Economies behave like ecologies, not machines. We detect emergence, not predict outcomes."*
+
+## 🚀 ML/DL-Driven Emergence Detection Platform
+
+This repository implements **machine learning-based emergence detection** with **GDELT as a behavioral data source**. The platform detects phase transitions and regime changes before they manifest in aggregate statistics.
+
+### Quick Start
+
+```bash
+# Install
+pip install -e .
+
+# Install with full ML dependencies
+pip install -e ".[ml-full]"
+```
+
+### Key Capabilities
+
+| Feature | Description |
+|---------|-------------|
+| **GDELT Integration** | Behavioral traces from 100,000+ global news sources |
+| **Anomaly Detection** | Isolation forest, statistical methods for outlier detection |
+| **Clustering** | HDBSCAN, K-means for economic regime identification |
+| **Emergence Detection** | 8 signal types: phase transitions, cluster formation, anomaly cascades |
+| **Observable Output** | JSON export compatible with Observable visualization |
+
+### Architecture
+
+```
+Data Layer → Detection Layer → Observable Output
+     ↓              ↓                ↓
+   GDELT      ML/DL Models      Visualization
+ (Behavioral)  (sklearn)        (Observable Plot)
+```
+
+### Observable Notebook
+
+**Open in Observable:**
+
+1. Go to [observablehq.com](https://observablehq.com) and create a new notebook
+2. Copy cells from [`observable/prophetic-emergentomics.ojs`](observable/prophetic-emergentomics.ojs)
+3. Upload [`docs/data/emergence-data.json`](docs/data/emergence-data.json) as a file attachment
+
+Or fetch data directly after enabling GitHub Pages:
+```javascript
+data = fetch("https://stochastic-sisyphus.github.io/prophetic-emergentomics/data/emergence-data.json")
+  .then(r => r.json())
+```
+
+The notebook includes:
+- Anomaly detection timeline with threshold markers
+- PCA cluster scatter plot showing economic regimes
+- GDELT sentiment distribution histogram
+- Economic network topology visualization
+- Emergence signal cards with confidence scores
+
+---
 
 **WORKING PAPER**
 Look out for updates as I add preliminary research, articles, pre-print, paper (in progress!), and code. 

@@ -1,0 +1,219 @@
+// =============================================================================
+// PROPHETIC EMERGENTOMICS - Observable Notebook
+// ML/DL-Driven Emergence Detection in Complex Economic Systems
+// =============================================================================
+//
+// To use this notebook:
+// 1. Go to https://observablehq.com
+// 2. Create a new notebook
+// 3. Copy/paste each cell below into separate cells
+// 4. Or import this file directly
+//
+// Data source: GitHub Pages after you enable it
+// =============================================================================
+
+// --- CELL 1: Title ---
+md`# Prophetic Emergentomics
+
+**ML/DL-Driven Emergence Detection in Complex Economic Systems**
+
+> *"Economies behave like ecologies, not machines. We detect emergence, not predict outcomes."*
+
+This notebook visualizes emergence detection results from the Prophetic Emergentomics platform. GDELT provides behavioral data; ML models detect phase transitions and regime changes.
+
+[GitHub Repository](https://github.com/stochastic-sisyphus/prophetic-emergentomics)`
+
+// --- CELL 2: Load Data ---
+data = FileAttachment("emergence-data.json").json()
+
+// Or fetch from GitHub Pages (uncomment after enabling Pages):
+// data = fetch("https://stochastic-sisyphus.github.io/prophetic-emergentomics/data/emergence-data.json").then(r => r.json())
+
+// --- CELL 3: Summary Metrics ---
+md`## Detection Summary
+
+| Metric | Value |
+|--------|-------|
+| **Signals Detected** | ${data.summary.total_signals} |
+| **Phase Transitions** | ${data.summary.phase_transitions} |
+| **Anomaly Rate** | ${(data.summary.anomaly_rate * 100).toFixed(1)}% |
+| **Economic Regimes** | ${data.summary.n_clusters} |
+| **Confidence** | ${(data.metadata.overall_confidence * 100).toFixed(0)}% |`
+
+// --- CELL 4: Anomaly Timeline ---
+md`## Anomaly Detection Timeline
+
+Isolation forest anomaly scores over time. Red dots indicate detected anomalies (score > 0.7).`
+
+Plot.plot({
+  height: 300,
+  marginLeft: 60,
+  marginBottom: 50,
+  x: {
+    label: "Date",
+    tickFormat: d => d.slice(5), // MM-DD format
+    tickRotate: -45
+  },
+  y: {
+    label: "Anomaly Score",
+    domain: [0, 1]
+  },
+  marks: [
+    Plot.ruleY([0.7], {stroke: "red", strokeDasharray: "4,4", strokeOpacity: 0.5}),
+    Plot.line(data.anomaly_timeline, {
+      x: "date",
+      y: "score",
+      stroke: "steelblue",
+      strokeWidth: 2
+    }),
+    Plot.dot(data.anomaly_timeline.filter(d => d.is_anomaly), {
+      x: "date",
+      y: "score",
+      fill: "red",
+      r: 5
+    }),
+    Plot.text([{x: "2024-10-15", y: 0.73}], {
+      text: ["Threshold"],
+      fill: "red",
+      fontSize: 10
+    })
+  ]
+})
+
+// --- CELL 5: Cluster Scatter ---
+md`## Economic Regime Clusters (PCA Projection)
+
+Four distinct economic regimes identified through HDBSCAN clustering. Each cluster represents a different system state.`
+
+Plot.plot({
+  height: 350,
+  marginLeft: 60,
+  x: {label: "Principal Component 1"},
+  y: {label: "Principal Component 2"},
+  color: {
+    legend: true,
+    domain: [0, 1, 2, 3],
+    range: ["#8b5cf6", "#3b82f6", "#10b981", "#f59e0b"],
+    tickFormat: d => ["Pre-Crisis Stable", "Transition Phase", "Emerging Regime", "New Equilibrium"][d]
+  },
+  marks: [
+    Plot.dot(data.clusters, {
+      x: "x",
+      y: "y",
+      fill: "cluster",
+      r: 6,
+      fillOpacity: 0.7,
+      title: d => d.label
+    })
+  ]
+})
+
+// --- CELL 6: Emergence Signals ---
+md`## Detected Emergence Signals
+
+${data.signals.map(s => `
+### ${s.title}
+- **Type:** ${s.type}
+- **Confidence:** ${(s.confidence * 100).toFixed(0)}%
+- **Method:** ${s.method}
+- **Detected:** ${s.detected_at}
+
+${s.description}
+`).join("\n---\n")}`
+
+// --- CELL 7: GDELT Sentiment Distribution ---
+md`## GDELT Sentiment Distribution
+
+Distribution of tone scores from GDELT news coverage. Negative = anxiety/pessimism, Positive = optimism.`
+
+Plot.plot({
+  height: 280,
+  marginLeft: 60,
+  x: {label: "GDELT Tone Score"},
+  y: {label: "Count"},
+  marks: [
+    Plot.rectY(data.gdelt_sentiment,
+      Plot.binX({y: "count"}, {
+        x: "tone",
+        fill: d => d.tone < -2 ? "#ef4444" : d.tone > 2 ? "#10b981" : "#3b82f6",
+        fillOpacity: 0.7
+      })
+    ),
+    Plot.ruleX([0], {stroke: "#666", strokeDasharray: "2,2"})
+  ]
+})
+
+// --- CELL 8: Network Visualization ---
+md`## Economic Network Topology
+
+Sector interconnections showing information/impact flow. Node size = centrality. Link weight = correlation strength.`
+
+{
+  const width = 600;
+  const height = 400;
+
+  const nodes = data.network.nodes.map((n, i) => ({
+    ...n,
+    x: width/2 + Math.cos(i / data.network.nodes.length * 2 * Math.PI) * 150,
+    y: height/2 + Math.sin(i / data.network.nodes.length * 2 * Math.PI) * 150
+  }));
+
+  const nodeMap = new Map(nodes.map(n => [n.id, n]));
+
+  const svg = d3.create("svg")
+    .attr("viewBox", [0, 0, width, height])
+    .attr("width", width)
+    .attr("height", height);
+
+  // Links
+  svg.selectAll("line")
+    .data(data.network.links)
+    .join("line")
+    .attr("x1", d => nodeMap.get(d.source).x)
+    .attr("y1", d => nodeMap.get(d.source).y)
+    .attr("x2", d => nodeMap.get(d.target).x)
+    .attr("y2", d => nodeMap.get(d.target).y)
+    .attr("stroke", "#3b82f6")
+    .attr("stroke-opacity", d => d.weight * 0.6)
+    .attr("stroke-width", d => d.weight * 3);
+
+  // Nodes
+  svg.selectAll("circle")
+    .data(nodes)
+    .join("circle")
+    .attr("cx", d => d.x)
+    .attr("cy", d => d.y)
+    .attr("r", d => d.size / 2.5)
+    .attr("fill", d => d.type === "sector" ? "#8b5cf6" : "#10b981")
+    .attr("fill-opacity", 0.8);
+
+  // Labels
+  svg.selectAll("text")
+    .data(nodes)
+    .join("text")
+    .attr("x", d => d.x)
+    .attr("y", d => d.y + d.size / 2 + 14)
+    .attr("text-anchor", "middle")
+    .attr("font-size", "11px")
+    .attr("fill", "#666")
+    .text(d => d.id);
+
+  return svg.node();
+}
+
+// --- CELL 9: Theoretical Foundations ---
+md`## Theoretical Foundations
+
+${data.theoretical_frameworks.map(f => `
+### ${f.name}
+${f.description}
+`).join("\n")}`
+
+// --- CELL 10: Footer ---
+md`---
+
+**Prophetic Emergentomics** | [GitHub](https://github.com/stochastic-sisyphus/prophetic-emergentomics)
+
+*"Forecasting's not broken. It's outdated. This is structural inference under uncertainty."*
+
+— Vanessa Beck / stochastic-sisyphus`
